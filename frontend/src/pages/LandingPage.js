@@ -12,7 +12,7 @@ const Header = () => {
                 <p className='text-white'>About Us</p>
                 <p className='text-white'>How It Works</p>
                 <p className='text-white'>Benefits</p>
-                <p className='text-white'>Login</p>
+                <Link className='text-white' to='/auth/login'>Login</Link>
                 <Button variant="contained">Get started now</Button>
             </div>
             <div className='md:hidden'>
@@ -87,7 +87,45 @@ export const LandingPage = () => {
             <Home />
         </div>
         <About />
+        <HowItWorks />
         <p className='text-lg font-bold'>LandingPage</p>
     </div>
   )
+}
+
+
+const HowItWorks = () => {
+
+    return(
+        <div>
+            <div>
+                <h2 className='font-bold text-2xl'>How does it work?</h2>
+                <br></br>
+                <p>With lots of unique blocks, you can easily build a page easily without any working</p>
+                <br></br>
+            </div>
+            <div className='flex md:block justify-center items-start'>
+                <div className='flex flex-col md:flex-row justify-around'>
+                    <p className='rounded-full w-10 h-10 bg-red-500 text-white flex self-center items-center justify-center mb-32 md:mb-2'>1</p>
+                    <p className='rounded-full w-10 h-10 bg-green-600 text-white flex self-center items-center justify-center mb-32 md:mb-2'>2</p>
+                    <p className='rounded-full w-10 h-10 bg-purple-800 text-white flex self-center items-center justify-center mb-32 md:mb-2'>3</p>
+                </div>
+                <div className='ml-4 md:ml-0 flex items-start flex-col md:flex-row justify-around'>
+                    <div className='w-64 h-40 md:h-auto flex flex-col justify-left md:justify-center'>
+                        <h1>REGISTER</h1>
+                        <p className='self-left flex'>Create an account to access our services and search through our database to see if your ID has been posted</p>
+                    </div>
+                    <div className='w-64 h-40 md:h-auto flex flex-col justify-start md:justify-center'>
+                        <h1>POSTING IDs</h1>
+                        <p>If you've found an ID, post the details securely</p>
+                    </div>
+                    <div className='w-64 h-40 md:h-auto flex flex-col justify-start md:justify-center'>
+                        <h1>CONNECT</h1>
+                        <p>We'll connect you with the person who found yur ID</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    )
 }
