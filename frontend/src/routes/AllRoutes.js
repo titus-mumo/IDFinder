@@ -1,6 +1,6 @@
 import React from 'react'
 import { Routes, Route } from "react-router-dom";
-import { LandingPage, Login, SignUp,ForgotPassword, ResetPassword } from "../pages";
+import { LandingPage, Login, SignUp,ForgotPassword, ResetPassword } from "../pages/auth";
 
 export const AllRoutes = () => {
     return(
