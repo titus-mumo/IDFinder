@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import Button from '@mui/material/Button';
-import placeholder from '../assets/images/placeholder.png'
+import placeholder from '../../assets/images/placeholder.png'
 
 const Header = () => {
     return(

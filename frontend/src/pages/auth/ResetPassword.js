@@ -1,13 +1,23 @@
 import React, {useState} from 'react'
 import { Input, Button } from '@mui/material'
+import { useNavigate } from 'react-router-dom'
+import { useSnackbar } from '../../providers/SnackProvider'
 
 
 export const ResetPassword = () => {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+
+  const showSnackbar = useSnackbar();
+
+  const navigate = useNavigate()
   const handleResetPassword = (e) => {
     e.preventDefault()
     //TODO: Reset password logic
+    showSnackbar('Password reset success!');
+    setTimeout(() => {
+      navigate('/auth/login')
+    }, 1500)
   }
   return (
     <div className='flex justify-around mt-20'>
