@@ -2,13 +2,23 @@ import React, {useState} from 'react'
 import { Button, Input, Typography } from '@mui/material'
 import { Link } from 'react-router-dom'
 import { Google as GoogleIcon } from '@mui/icons-material';
+import { useSnackbar } from '../../providers/SnackProvider';
+import { useNavigate } from 'react-router-dom';
 
 export const SignUp = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+
+    const showSnackBar = useSnackbar()
+    const navigate = useNavigate()
+
     const handleRegisterWithEmail = (e) => {
         e.preventDefault()
+        showSnackBar("Sign Up success!")
+        setTimeout(() => {
+            navigate('/auth/login')
+        }, 1000)
     }
 
     const continueWithGoogle = (e) => {
