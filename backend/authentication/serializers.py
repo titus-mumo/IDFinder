@@ -5,6 +5,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_str
 from .models import VerificationCode
+import re
 
 User = get_user_model()
 
@@ -13,6 +14,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         model = User
         fields = ['email', 'phone_number', 'password']
         extra_kwargs = {'password': {'write_only': True}}
+
+    def validate_phone_number(self, value):
+        # Regex pattern to match phone number format like "+254-7198888282"
+        pattern = r'^\+\d{3}-\d{9,10}$'
+        if not re.match(pattern, value):
+            raise serializers.ValidationError("Phone number must be in the format +XXX-XXXXXXXXX")
+        return value
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)

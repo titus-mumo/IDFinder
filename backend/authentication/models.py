@@ -1,17 +1,26 @@
-# authentication/models.py
-
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
+import re
 
 from django.conf import settings
 
 class UserManager(BaseUserManager):
+    def validate_phone_number(self, phone_number):
+        # Regex pattern to match phone number format like "+254-7198888282"
+        pattern = r'^\+\d{3}-\d{9,10}$'
+        if not re.match(pattern, phone_number):
+            raise ValidationError(_('Phone number must be in the format +XXX-XXXXXXXXX'))
+
     def create_user(self, email, phone_number, password=None, **extra_fields):
         if not email:
             raise ValueError('The Email field must be set')
         if not phone_number:
             raise ValueError('The Phone Number field must be set')
-        
+
+        self.validate_phone_number(phone_number)  # Validate phone number format
+
         email = self.normalize_email(email)
         user = self.model(email=email, phone_number=phone_number, **extra_fields)
         user.set_password(password)
@@ -40,7 +49,6 @@ class Custom_User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
-
 
 class VerificationCode(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
