@@ -20,7 +20,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         pattern = r'^\+\d{3}-\d{9,10}$'
         if not re.match(pattern, value):
             raise serializers.ValidationError("Phone number must be in the format +XXX-XXXXXXXXX")
+
+        # Check if the phone number already exists
+        if User.objects.filter(phone_number=value).exists():
+            raise serializers.ValidationError("A user with this phone number already exists")
+        
         return value
+    
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)

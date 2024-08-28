@@ -19,7 +19,12 @@ class UserManager(BaseUserManager):
         if not phone_number:
             raise ValueError('The Phone Number field must be set')
 
-        self.validate_phone_number(phone_number)  # Validate phone number format
+         # Validate phone number format
+        self.validate_phone_number(phone_number)
+
+        # Check if the phone number already exists
+        if self.model.objects.filter(phone_number=phone_number).exists():
+            raise ValidationError(_('A user with this phone number already exists'))
 
         email = self.normalize_email(email)
         user = self.model(email=email, phone_number=phone_number, **extra_fields)
