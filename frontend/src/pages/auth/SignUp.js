@@ -27,7 +27,7 @@ export const SignUp = () => {
         if(phoneNumber.length !== 13){
             return showSnackBar("Phone number is invalid")
         }
-        if(!str(phoneNumber).startsWith('+254')){
+        if(!phoneNumber.toString().startsWith('+254')){
             return showSnackBar("Phone number should start with +254")
         }
         if(password.length < 8){
@@ -42,7 +42,7 @@ export const SignUp = () => {
         }
 
         const data = {
-            
+
         }
         showSnackBar("Sign Up success!")
         setTimeout(() => {
