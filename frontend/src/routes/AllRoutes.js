@@ -1,6 +1,11 @@
 import React from 'react'
 import { Routes, Route } from "react-router-dom";
 import { LandingPage, Login, SignUp,ForgotPassword, ResetPassword } from "../pages/auth";
+import { Home, ContactAdmin, IDsIFound, Profile, Search } from '../pages/userview';
+import PrivateRoutes from './PrivateRoutes';
+import ProtectUserRoutes from "./ProtectUserRoutes";
+import { UserLayout } from '../layouts';
+
 
 export const AllRoutes = () => {
     return(
@@ -10,6 +15,17 @@ export const AllRoutes = () => {
             <Route path='/auth/register' element={<SignUp />} />
             <Route path='/auth/forgot-password' element={<ForgotPassword />} />
             <Route path='/auth/reset-password' element={<ResetPassword />} />
+            {/* <Route element={<PrivateRoutes />} > */}
+                <Route element={<UserLayout />} >
+                {/* <Route element={<ProtectUserRoutes />} > */}
+                    <Route path='/home' element={<Home />} />
+                    <Route path='/ids-i-found' element={<IDsIFound />} />
+                    <Route path='/contact-admin' element={<ContactAdmin />} />
+                    <Route path='/search' element={<Search />} />
+                    <Route path='/profile' element={<Profile />} />
+                {/* </Route> */}
+                </Route>
+            {/* </Route> */}
         </Routes>
     )
 }
