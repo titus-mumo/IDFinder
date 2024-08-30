@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    'rest_framework_social_oauth2',
+    # 'rest_framework_social_oauth2'
+    #TODO: This middleware has an error
     'django.contrib.sites', 
     
     # Required for allauth
@@ -81,7 +82,8 @@ SIMPLE_JWT = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    'rest_framework_social_oauth2.backends.DjangoOAuth2',
+    #TODO: Error installing the module below
+    # 'rest_framework_social_oauth2.backends.DjangoOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )
