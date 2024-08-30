@@ -12,21 +12,21 @@ User = get_user_model()
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'phone_number', 'password']
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = ['email', 'phone_number', 'password', 'username']  # Included username
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'username': {'read_only': True}  # Username will be auto-generated
+        }
 
     def validate_phone_number(self, value):
-        # Regex pattern to match phone number format like "+254-7198888282"
         pattern = r'^\+\d{3}-\d{9,10}$'
         if not re.match(pattern, value):
             raise serializers.ValidationError("Phone number must be in the format +XXX-XXXXXXXXX")
 
-        # Check if the phone number already exists
         if User.objects.filter(phone_number=value).exists():
             raise serializers.ValidationError("A user with this phone number already exists")
         
         return value
-    
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)

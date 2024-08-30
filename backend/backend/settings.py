@@ -81,7 +81,6 @@ SIMPLE_JWT = {
 }
 
 AUTHENTICATION_BACKENDS = (
-    'rest_framework_social_oauth2.backends.DjangoOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )

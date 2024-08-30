@@ -1,14 +1,17 @@
 from django.db import models
+from django.conf import settings  # Use settings.AUTH_USER_MODEL for referencing custom user model
 
-# Create your models here.
-class IDModel(models.Model):
-    created_at = models.DateTimeField(auto_now_add = True)
-    id_no = models.IntegerField(max_length=8)
-    serial_number = models.CharField(unique=True,max_length=20)
-    id_name = models.CharField(max_length=100)
-    date_of_birth = models.CharField(max_length=20)
-    gender = models.CharField(max_length=30)
-    district_of_birth = models.CharField(max_length=50)
-    date_of_issue = models.CharField(max_length=20)
-    id_image = models.FileField(upload_to='id_image')
-    id_status = models.CharField(max_length=20)
+class ID(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ids_found')
+    id_name = models.CharField(max_length=255)
+    sn = models.CharField(max_length=255)  # Serial number
+    id_no = models.CharField(max_length=255, unique=True)
+    date_of_birth = models.DateField()
+    gender = models.CharField(max_length=10)
+    district_of_birth = models.CharField(max_length=255)
+    date_of_issue = models.DateField()
+    id_image = models.ImageField(upload_to='id_images/')
+    id_status = models.CharField(max_length=20, choices=[('Found', 'Found'), ('Claimed', 'Claimed')])
+
+    def __str__(self):
+        return f"{self.id_name} - {self.id_no}"
