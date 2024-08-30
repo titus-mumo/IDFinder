@@ -1,18 +1,21 @@
 import { Typography, Input, Button } from '@mui/material'
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSnackbar } from '../../providers/SnackProvider';
 
 export const ForgotPassword = () => {
     const [email, setEmail] = useState('')
     const [phoneNumber, setPhoneNumber] = useState('')
     const [active, setActive] = useState('email')
 
+    const showSnackBar = useSnackbar()
+
     const navigate = useNavigate()
 
     const handleSendCode = (e) => {
         e.preventDefault()
         // TODO: send code logic
-        console.log('Code sent to', active === 'email' ? email : phoneNumber)
+        showSnackBar('Code sent to', active === 'email' ? email : phoneNumber)
     }
 
     const handleConfirmationCode = (e) => {

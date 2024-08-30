@@ -1,0 +1,5 @@
+export { ContactAdmin } from './ContactAdmin'
+export {Home} from './Home'
+export {IDsIFound} from './IDsIFound'
+export {Profile} from './Profile'
+export {Search} from './Search'
