@@ -144,7 +144,7 @@ class VerifyCodeView(generics.GenericAPIView):
             # Assuming some logic to verify the code and activate the user
             return Response({
                 'message': 'Phone number verified successfully.',
-                'username': user.username,  # Added username to the response
+                'username': user.username,  
                 'email': user.email,
                 'phone_number': user.phone_number,
             }, status=status.HTTP_200_OK)
