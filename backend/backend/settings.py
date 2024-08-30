@@ -119,6 +119,16 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+DEFAULT_FROM_EMAIL = 'email@example.com'
+
+# TODO:Add your email server settings here
+EMAIL_HOST = 'smtp.example.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'example@example.com'
+EMAIL_HOST_PASSWORD = 'email-password'
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
@@ -170,3 +180,4 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
