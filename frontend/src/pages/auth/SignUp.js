@@ -4,8 +4,16 @@ import { Link } from 'react-router-dom'
 import { Google as GoogleIcon } from '@mui/icons-material';
 import { useSnackbar } from '../../providers/SnackProvider';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../providers';
+import { ApiCall } from '../../hooks';
+
+require('dotenv').config()
 
 export const SignUp = () => {
+    const BASE_URL = process.env.BASE_URL
+
+    const {access, setAccess, refresh, setRefresh} = useAuth()
+
     const [email, setEmail] = useState('')
     const [phoneNumber, setPhoneNumber] = useState('')
     const [password, setPassword] = useState('')
@@ -41,13 +49,25 @@ export const SignUp = () => {
             return showSnackBar("Passwords do not match!")
         }
 
+        const formattedNumber = phoneNumber.slice(0, 4) + '-' + phoneNumber.slice(4);
         const data = {
+            email: email,
+            phone_number: formattedNumber,
+            password: password
 
         }
-        showSnackBar("Sign Up success!")
-        setTimeout(() => {
-            navigate('/auth/login')
-        }, 1000)
+
+        ApiCall(BASE_URL + 'register/', 'post', access, refresh, setAccess, setRefresh, data, {}, false).
+        then((response) => {
+            console.log(response)
+            showSnackBar("Sign Up success!")
+            setTimeout(() => {
+                navigate('/auth/login')
+            }, 1000)
+        })
+        .catch((error) => {
+            showSnackBar("An error occured")
+        })
     }
 
     const continueWithGoogle = (e) => {

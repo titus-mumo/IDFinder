@@ -7,6 +7,10 @@ import { useNavigate } from 'react-router-dom';
 import EmailIcon from '@mui/icons-material/Email'; 
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
+import { useAuth } from '../../providers';
+import { ApiCall } from '../../hooks';
+
+require('dotenv').config()
 
 export const Login = () => {
     const [email, setEmail] = useState('')
@@ -15,15 +19,40 @@ export const Login = () => {
 
     const showSnackBar = useSnackbar()
 
+    const BASE_URL = process.env.BASE_URL
+
     const navigate = useNavigate()
 
+    const userAuth = useAuth()
+    const {access, refresh, setAccess, setRefresh} = userAuth
 
     const handleLoginWithEmail = (e) => {
         e.preventDefault()
-        showSnackBar("Login success!")
-        setTimeout(() => {
-            navigate('/home')
-        }, 1000)
+        if(email.length === 0 || password.length === 0){
+            return showSnackBar("Check to fill all the fields!")
+        }
+        if(!email.includes('@')){
+            return showSnackBar("Invalid password!")
+        }
+        const data = {
+            email: email,
+            password: password
+        }
+
+        ApiCall(BASE_URL + 'login/', 'get', access, refresh, setAccess, setRefresh, data, {}, false)
+        .then((response) => {
+            if(response && response.status && response.status === 200){
+                showSnackBar("Login success!")
+                setTimeout(() => {
+                    navigate('/home')
+                }, 1000)
+                return
+            }
+            throw new Error(response.data)
+        })
+        .catch((error) => {
+            showSnackBar(error.message? error.message : "An error occured")
+        }) 
     }
 
     const handleLoginWithGoogle = () => {

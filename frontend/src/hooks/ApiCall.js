@@ -44,6 +44,8 @@ export const ApiCall = async (endpoint, method, access, refresh, setAccess, setR
                     localStorage.setItem("access", newAccess);
                     localStorage.setItem("refresh", newRefresh);
 
+                    let refetchedData;
+
                     // Retry the original request with the new token
                     headers["Authorization"] = `Bearer ${newAccess}`;
                     if (method === 'post') {
