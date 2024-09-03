@@ -15,8 +15,12 @@ class IDListView(generics.ListAPIView):
     serializer_class = IDListSerializer
     permission_classes = [IsAuthenticated]
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
     def get_queryset(self):
         return ID.objects.all()
+    
 
 class MyIDListView(generics.ListAPIView):
     serializer_class = IDSerializer
