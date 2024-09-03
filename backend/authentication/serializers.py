@@ -12,21 +12,21 @@ User = get_user_model()
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['email', 'phone_number', 'password']
-        extra_kwargs = {'password': {'write_only': True}}
+        fields = ['email', 'phone_number', 'password', 'username']  # Included username
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'username': {'read_only': True}  # Username will be auto-generated
+        }
 
     def validate_phone_number(self, value):
-        # Regex pattern to match phone number format like "+254-7198888282"
         pattern = r'^\+\d{3}-\d{9,10}$'
         if not re.match(pattern, value):
             raise serializers.ValidationError("Phone number must be in the format +XXX-XXXXXXXXX")
 
-        # Check if the phone number already exists
         if User.objects.filter(phone_number=value).exists():
             raise serializers.ValidationError("A user with this phone number already exists")
         
         return value
-    
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
@@ -49,12 +49,19 @@ class LoginSerializer(serializers.Serializer):
 class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
-    def validate(self, data):
-        email = data.get('email')
-        user = User.objects.filter(email=email).first()
-        if not user:
-            raise serializers.ValidationError("User with this email does not exist")
-        return data
+    def validate_email(self, value):
+        if not User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("User with this email does not exist.")
+        return value
+    
+class SetNewPasswordSerializer(serializers.Serializer):
+    password = serializers.CharField(write_only=True, required=True)
+    password_confirm = serializers.CharField(write_only=True, required=True)
+
+    def validate(self, attrs):
+        if attrs['password'] != attrs['password_confirm']:
+            raise serializers.ValidationError("Passwords do not match.")
+        return attrs
 
 
 class PasswordResetConfirmSerializer(serializers.Serializer):
