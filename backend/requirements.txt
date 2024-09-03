@@ -9,3 +9,4 @@ django-allauth==64.1.0
 oauth2_provider
 requests
 cryptography
+Pillow

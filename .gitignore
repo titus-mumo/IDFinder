@@ -1,7 +1,8 @@
 venv/
-requirements.txt/
 /venv
 *.pyc
 __pycache__/
 /.venv
 db.sqlite3
+backend/authentication/migrations/
+backend/id_finder/migrations/
