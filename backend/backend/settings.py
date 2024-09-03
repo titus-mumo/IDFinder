@@ -83,11 +83,6 @@ SIMPLE_JWT = {
 }
 
 AUTHENTICATION_BACKENDS = (
-<<<<<<< HEAD
-    #TODO: Error installing the module below
-    # 'rest_framework_social_oauth2.backends.DjangoOAuth2',
-=======
->>>>>>> 79784c9cfa78c96134ee563ac5ba1a6812b0d6fd
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )
