@@ -10,16 +10,12 @@ import IconButton from '@mui/material/IconButton';
 import { useAuth } from '../../providers';
 import { ApiCall } from '../../hooks';
 
-require('dotenv').config()
-
 export const Login = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [passwordVisible, setPasswordVisible] = useState('')
 
     const showSnackBar = useSnackbar()
-
-    const BASE_URL = process.env.BASE_URL
 
     const navigate = useNavigate()
 
@@ -32,14 +28,14 @@ export const Login = () => {
             return showSnackBar("Check to fill all the fields!")
         }
         if(!email.includes('@')){
-            return showSnackBar("Invalid password!")
+            return showSnackBar("Invalid email!")
         }
         const data = {
             email: email,
             password: password
         }
-
-        ApiCall(BASE_URL + 'login/', 'get', access, refresh, setAccess, setRefresh, data, {}, false)
+        
+        ApiCall('auth/login/', 'get', access, refresh, setAccess, setRefresh, data, {}, false, showSnackBar)
         .then((response) => {
             if(response && response.status && response.status === 200){
                 showSnackBar("Login success!")
@@ -51,6 +47,7 @@ export const Login = () => {
             throw new Error(response.data)
         })
         .catch((error) => {
+            console.log(error.message)
             showSnackBar(error.message? error.message : "An error occured")
         }) 
     }

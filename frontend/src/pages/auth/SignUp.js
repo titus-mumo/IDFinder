@@ -7,10 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../providers';
 import { ApiCall } from '../../hooks';
 
-require('dotenv').config()
-
 export const SignUp = () => {
-    const BASE_URL = process.env.BASE_URL
 
     const {access, setAccess, refresh, setRefresh} = useAuth()
 
@@ -32,10 +29,10 @@ export const SignUp = () => {
         if(!email.includes('@')){
             return showSnackBar("Invalid email")
         }
-        if(phoneNumber.length !== 13){
+        if(phoneNumber.length !== 12){
             return showSnackBar("Phone number is invalid")
         }
-        if(!phoneNumber.toString().startsWith('+254')){
+        if(!phoneNumber.toString().startsWith('254')){
             return showSnackBar("Phone number should start with +254")
         }
         if(password.length < 8){
@@ -57,7 +54,7 @@ export const SignUp = () => {
 
         }
 
-        ApiCall(BASE_URL + 'register/', 'post', access, refresh, setAccess, setRefresh, data, {}, false).
+        ApiCall('auth/register/', 'post', access, refresh, setAccess, setRefresh, data, {}, false, showSnackBar).
         then((response) => {
             console.log(response)
             showSnackBar("Sign Up success!")

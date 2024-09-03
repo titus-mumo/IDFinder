@@ -67,7 +67,6 @@ class PasswordResetConfirmView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         return Response({"message": "Password has been reset successfully."})
 
-
 class RefreshTokenView(generics.GenericAPIView):
     serializer_class = RefreshTokenSerializer
     permission_classes = [AllowAny]

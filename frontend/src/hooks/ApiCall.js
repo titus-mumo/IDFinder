@@ -1,18 +1,16 @@
-import React from "react";
-import { useSnackbar } from '../providers/SnackProvider'
 import axios from "axios";
 import { refreshAccessToken } from "./RefreshAccessToken";
 
+require('dotenv').config();
+
 const base_url = process.env.BASE_URL;
 
-export const ApiCall = async (endpoint, method, access, refresh, setAccess, setRefresh, data = {}, options = {}, form = {}) => {
+export const ApiCall = async (endpoint, method, access, refresh, setAccess, setRefresh, data = {}, options = {}, form = {}, showSnackBar) => {
     const headers = {
         ...options.headers,
         "Authorization": `Bearer ${access}`,
         "Content-Type": form && form === true?'multipart/form-data':"application/json"
     };
-
-    const showSnackbar = useSnackbar();
 
     const api = axios.create({
         baseURL: base_url,
@@ -59,7 +57,7 @@ export const ApiCall = async (endpoint, method, access, refresh, setAccess, setR
                     }
                     return refetchedData
                 } else {
-                    showSnackbar("You are not authorized to perform this function");
+                    showSnackBar("You are not authorized to perform this function");
                 }
             } catch (refreshError) {
             
