@@ -32,7 +32,7 @@ export const AuthProvider = ({ children }) => {
                 setRefresh(res.refresh)
                 localStorage.setItem('access', res.access)
                 localStorage.setItem('refresh', res.refresh)
-                localStorage.setItem("user", JSON.stringify({email: res.email}))
+                localStorage.setItem("user", JSON.stringify({email: res.email, phone_number: res.phone_number, username: res.username}))
                 showSnackbar('Login success!')
 
                 const data = {
