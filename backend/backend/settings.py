@@ -119,7 +119,7 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 
 
 
-# TODO:Add your email server settings here
+# Add your email server settings here
 import os
 from pathlib import Path
 from dotenv import load_dotenv  # Make sure you import this
@@ -147,6 +147,14 @@ if ENVIRONMENT == 'production':
     ACCOUNT_EMAIL_SUBJECT_PREFIX = ''
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+#verification phone setting
+from decouple import config
+
+TWILIO_ACCOUNT_SID = config('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = config('TWILIO_AUTH_TOKEN')
+TWILIO_PHONE_NUMBER = config('TWILIO_PHONE_NUMBER')
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
