@@ -4,6 +4,8 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 import re
+import random
+import string
 
 class UserManager(BaseUserManager):
     def validate_phone_number(self, phone_number):
@@ -38,10 +40,13 @@ class UserManager(BaseUserManager):
 
         return self.create_user(email, phone_number, password, **extra_fields)
 
+
 class Custom_User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=255, blank=True)
-    phone_number = models.CharField(max_length=15, unique=True)
+    phone_number = models.CharField(max_length=15, unique=True, blank=True, null=True)
+    verification_code = models.CharField(max_length=6, blank=True, null=True)
+    is_phone_verified = models.BooleanField(default=False)
     role = models.CharField(max_length=50, blank=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -56,10 +61,19 @@ class Custom_User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.email
 
+    def generate_verification_code(self):
+        # Generate a random alphanumeric code in the format 9A9FRU
+        letters_and_digits = string.ascii_uppercase + string.digits
+        self.verification_code = ''.join(random.choices(letters_and_digits, k=6))
+        return self.verification_code
+
     def save(self, *args, **kwargs):
         if not self.username:
             self.username = self.email.split('@')[0]  # Auto-set username before save if it's empty
+        if not self.verification_code:
+            self.generate_verification_code()  # Generate the verification code if not set
         super().save(*args, **kwargs)
+
 
 class VerificationCode(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
