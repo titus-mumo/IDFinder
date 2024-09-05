@@ -1,7 +1,7 @@
 import React from 'react'
 import { Routes, Route } from "react-router-dom";
 import { LandingPage, Login, SignUp,ForgotPassword, ResetPassword } from "../pages/auth";
-import { Home, ContactAdmin, IDsIFound, Profile, Search } from '../pages/userview';
+import { Home, ContactAdmin, IDsIFound, Profile, Search, IDDetail } from '../pages/userview';
 import PrivateRoutes from './PrivateRoutes';
 import ProtectUserRoutes from "./ProtectUserRoutes";
 import { UserLayout } from '../layouts';
@@ -23,6 +23,7 @@ export const AllRoutes = () => {
                     <Route path='/contact-admin' element={<ContactAdmin />} />
                     <Route path='/search' element={<Search />} />
                     <Route path='/profile' element={<Profile />} />
+                    <Route path='/id-detail' element={<IDDetail />} />
                 {/* </Route> */}
                 </Route>
             {/* </Route> */}

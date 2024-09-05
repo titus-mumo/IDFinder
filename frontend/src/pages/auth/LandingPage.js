@@ -110,7 +110,7 @@ const HowItWorks = () => {
                     <p className='rounded-full w-10 h-10 bg-green-600 text-white flex self-center items-center justify-center mb-32 md:mb-2'>2</p>
                     <p className='rounded-full w-10 h-10 bg-purple-800 text-white flex self-center items-center justify-center mb-32 md:mb-2'>3</p>
                 </div>
-                <div className='ml-4 md:ml-0 flex items-start flex-col md:flex-row justify-around'>
+                <div className='pl-4 md:pl-0 flex items-start flex-col md:flex-row justify-around'>
                     <div className='w-64 h-40 md:h-auto flex flex-col justify-left md:justify-center'>
                         <h1>REGISTER</h1>
                         <p className='self-left flex'>Create an account to access our services and search through our database to see if your ID has been posted</p>

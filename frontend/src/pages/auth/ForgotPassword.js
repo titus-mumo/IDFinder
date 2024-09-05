@@ -69,7 +69,7 @@ export const ForgotPassword = () => {
                             active === 'email'? 
                             <Input 
                             onClick={() => setActive('email')} 
-                            className={`border-2 ${active === 'email' ? 'border-gray-800' : 'border-gray-200'} rounded-full p-1 mr-2 w-full`} 
+                            className={`border-2 ${active === 'email' ? 'border-gray-800' : 'border-gray-200'} rounded-full p-1 pr-2 w-full`} 
                             value={email} 
                             placeholder='Email' 
                             onChange={(e) => setEmail(e.target.value)} 
@@ -78,7 +78,7 @@ export const ForgotPassword = () => {
                             :
                             <Input 
                             onClick={() => setActive('phone')} 
-                            className={`border-2 ${active === 'phone' ? 'border-gray-800' : 'border-gray-200'} rounded-full p-1 mr-2 w-full`} 
+                            className={`border-2 ${active === 'phone' ? 'border-gray-800' : 'border-gray-200'} rounded-full p-1 pr-2 w-full`} 
                             value={phoneNumber} 
                             placeholder='Phone' 
                             onChange={(e) => setPhoneNumber(e.target.value)} 
@@ -88,7 +88,7 @@ export const ForgotPassword = () => {
                     </div>
                     
                     <Typography 
-                        className='mr-2 w-full text-end text-blue-800 text-sm' 
+                        className='pr-2 w-full text-end text-blue-800 text-sm' 
                         variant='body1' 
                         component='p' 
                         onClick={handleSendCode}

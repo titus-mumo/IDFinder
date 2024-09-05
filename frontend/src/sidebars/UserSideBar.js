@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Box, Typography, IconButton } from '@mui/material';
+import { Box, Typography} from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 
@@ -9,66 +9,56 @@ const SideBarItemComponent = ({ item, collapse }) => {
   const navigate = useNavigate();
 
   return (
-    <Box
+    <div
       onClick={() => navigate(item.link)}
-      sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '100%',
-        py: 0.5,
-        textAlign: 'center',
-        cursor: 'pointer',
-        backgroundColor: location.pathname === item.link ? 'primary.main' : 'transparent',
-        '&:hover': {
-          backgroundColor: location.pathname === item.link ? 'primary.main' : 'primary.light',
-          transition: 'background-color 0.3s',
-        },
-      }}
+      className={`flex justify-center items-center w-full py-1.5 text-center cursor-pointer my-0.5 rounded-md ${
+        location.pathname === item.link ? 'bg-blue-700' : 'bg-transparent'
+      } hover:${
+        location.pathname === item.link ? 'bg-blue-700' : 'bg-blue-500'
+      } transition-colors duration-300`}
     >
-      <IconButton 
-        sx={{ 
-          flexBasis: '25%', 
-          textAlign: 'right', 
-          color: 'white',
-          px: 2 
-        }}
-      >
+      <div className={`${collapse ? 'basis-1 text-center self-center' : 'basis-1/4'} px-2`}>
         {item.icon}
-      </IconButton>
-      <Typography 
-        sx={{ 
-          flexBasis: '75%', 
-          textAlign: 'left', 
-          fontWeight: '500',
-          display: collapse ? 'none' : 'block' 
-        }}
+      </div>
+      <div
+        className={`font-medium text-left ${
+          collapse ? 'hidden' : 'block flex-1'
+        }`}
       >
         {item.title}
-      </Typography>
-    </Box>
+      </div>
+    </div>
   );
 };
 
-  export const UserSideBar = ({showMenu, setShowMenu, sidebarItems}) => {
+export const UserSideBar = ({ showMenu, setShowMenu, sidebarItems }) => {
+  const [collapse, setCollapse] = useState(false);
 
-    const [collapse, setCollapse] = useState(false)
-
-    return (
-      <div className={`z-100000 ${showMenu === false? 'hidden': 'block top-9'} lg:block bg-blue-500 text-white flex items-start ${collapse === true? 'w-100': 'w-200 lg:w-250'} h-screen`}>
-        <div className={`w-full flex hover:cursor-pointer hover:bg-blue-800 py-2 ${collapse === true? 'justify-center': 'justify-end pr-5'}`} onClick={() => setCollapse(preCheck => !preCheck)}>
-            {
-                collapse !== true?
-                <ArrowBackIosIcon className='text-black' />:
-                <ArrowForwardIosIcon className='text-black' />
-            }
-        </div>
-        <div className={`flex flex-col justify-center py-1 w-full}`}>
-          {
-            sidebarItems.map((item, index) => <SideBarItemComponent key={index} item={item} collapse={collapse}/>
-            )
-          }
-        </div>
+  return (
+    <div
+      className={`z-50 ${
+        showMenu === false ? 'hidden' : 'flex'
+      } fixed lg:flex bg-blue-500 text-white flex-col items-start ${
+        collapse ? 'w-16' : 'w-52 lg:w-64'
+      } h-screen`}
+    >
+      <div
+        className={`w-full flex hover:cursor-pointer hover:bg-blue-800 py-0.5 ${
+          collapse ? 'justify-center' : 'justify-end py-0.5'
+        }`}
+        onClick={() => setCollapse((preCheck) => !preCheck)}
+      >
+        {collapse ? (
+          <ArrowForwardIosIcon className="text-black" />
+        ) : (
+          <ArrowBackIosIcon className="text-black" />
+        )}
       </div>
-    )
-  }
+      <div className="flex flex-col justify-center p-1 w-full">
+        {sidebarItems.map((item, index) => (
+          <SideBarItemComponent key={index} item={item} collapse={collapse} />
+        ))}
+      </div>
+    </div>
+  );
+};
