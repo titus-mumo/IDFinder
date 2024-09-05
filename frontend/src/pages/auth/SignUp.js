@@ -4,6 +4,9 @@ import { Link } from 'react-router-dom'
 import { Google as GoogleIcon } from '@mui/icons-material';
 import { useSnackbar } from '../../providers/SnackProvider';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+
+require('dotenv').config()
 
 export const SignUp = () => {
     const [email, setEmail] = useState('')
@@ -24,11 +27,11 @@ export const SignUp = () => {
         if(!email.includes('@')){
             return showSnackBar("Invalid email")
         }
-        if(phoneNumber.length !== 13){
+        if(phoneNumber.length !== 10){
             return showSnackBar("Phone number is invalid")
         }
-        if(!phoneNumber.toString().startsWith('+254')){
-            return showSnackBar("Phone number should start with +254")
+        if(!phoneNumber.toString().startsWith('0')){
+            return showSnackBar("Phone number should start with 0")
         }
         if(password.length < 8){
             return showSnackBar("Short too password!")
@@ -41,13 +44,25 @@ export const SignUp = () => {
             return showSnackBar("Passwords do not match!")
         }
 
+        const formattedPhoneNumber =  `+254-${phoneNumber.slice(1)}`;
+
         const data = {
+            email: email,
+            phone_number: formattedPhoneNumber,
+            password: password
 
         }
-        showSnackBar("Sign Up success!")
-        setTimeout(() => {
-            navigate('/auth/login')
-        }, 1000)
+
+        axios.post(process.env.BASE_URL + '/auth/register/', data)
+        .then((response) => {
+            showSnackBar("Sign Up success!")
+            setTimeout(() => {
+                navigate('/auth/login')
+            }, 1000)
+        })
+        .catch((error) => {
+            showSnackBar("An error occured")
+        })
     }
 
     const continueWithGoogle = (e) => {

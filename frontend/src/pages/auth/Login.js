@@ -7,6 +7,8 @@ import { useNavigate } from 'react-router-dom';
 import EmailIcon from '@mui/icons-material/Email'; 
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
+import { useAuth } from '../../providers';
+import { ApiCall } from '../../hooks';
 
 export const Login = () => {
     const [email, setEmail] = useState('')
@@ -17,13 +19,38 @@ export const Login = () => {
 
     const navigate = useNavigate()
 
+    const userAuth = useAuth()
+    const {setAccess, setRefresh} = userAuth
 
-    const handleLoginWithEmail = (e) => {
+    const handleLoginWithEmail = async(e) => {
         e.preventDefault()
-        showSnackBar("Login success!")
-        setTimeout(() => {
-            navigate('/home')
-        }, 1000)
+        if(email.length === 0 || password.length === 0){
+            return showSnackBar("Check to fill all the fields!")
+        }
+        if(!email.includes('@')){
+            return showSnackBar("Invalid email!")
+        }
+        const data = {
+            email: email,
+            password: password
+        }
+
+        const grantAccess = await userAuth.loginAction(data)
+        if(!grantAccess){
+            return
+        }else if(grantAccess.error){
+            showSnackBar(grantAccess.error)
+        }else{
+            console.log(grantAccess)
+            localStorage.setItem('access', grantAccess.access)
+            localStorage.setItem('refresh', grantAccess.refresh)
+            showSnackBar("Login successful")
+            setTimeout(() => {
+                navigate('/home')
+            }, 1000)
+
+        }
+        
     }
 
     const handleLoginWithGoogle = () => {
