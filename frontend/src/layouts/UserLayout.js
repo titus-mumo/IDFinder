@@ -84,7 +84,7 @@ export const UserLayout = () => {
         </div>
         <div className='lg:flex'>
             <UserSideBar showMenu={showMenu} setShowMenu={setShowMenu} sidebarItems={useSideBarItems}/>
-            <div className='w-full h-100vh'>
+            <div className='w-full'>
                 <div className=' md:w-auto'>
                     <Outlet />
                 </div>
