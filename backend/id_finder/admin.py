@@ -30,6 +30,7 @@ class CustomUserAdmin(admin.ModelAdmin):
     list_filter = ('is_staff', 'is_superuser', 'is_active')
     search_fields = ('username', 'email')
     ordering = ('username',)
+    readonly_fields = ('date_joined',)
 
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
