@@ -17,8 +17,6 @@ export const ApiCall = async (endpoint, method, access, refresh, setAccess, setR
         headers: headers
     });
 
-    console.log("Heree")
-
     
     try {
         let res;
