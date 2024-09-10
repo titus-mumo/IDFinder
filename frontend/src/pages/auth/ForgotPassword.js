@@ -1,6 +1,6 @@
 import { Typography, Input, Button } from '@mui/material'
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useSnackbar } from '../../providers/SnackProvider';
 
 export const ForgotPassword = () => {
@@ -69,7 +69,7 @@ export const ForgotPassword = () => {
                             active === 'email'? 
                             <Input 
                             onClick={() => setActive('email')} 
-                            className={`border-2 ${active === 'email' ? 'border-gray-800' : 'border-gray-200'} rounded-full p-1 mr-2 w-full`} 
+                            className={`border-2 ${active === 'email' ? 'border-gray-800' : 'border-gray-200'} rounded-full p-1 pr-2 w-full`} 
                             value={email} 
                             placeholder='Email' 
                             onChange={(e) => setEmail(e.target.value)} 
@@ -78,7 +78,7 @@ export const ForgotPassword = () => {
                             :
                             <Input 
                             onClick={() => setActive('phone')} 
-                            className={`border-2 ${active === 'phone' ? 'border-gray-800' : 'border-gray-200'} rounded-full p-1 mr-2 w-full`} 
+                            className={`border-2 ${active === 'phone' ? 'border-gray-800' : 'border-gray-200'} rounded-full p-1 pr-2 w-full`} 
                             value={phoneNumber} 
                             placeholder='Phone' 
                             onChange={(e) => setPhoneNumber(e.target.value)} 
@@ -86,16 +86,25 @@ export const ForgotPassword = () => {
                         />
                         }
                     </div>
-                    
-                    <Typography 
-                        className='mr-2 w-full text-end text-blue-800 text-sm' 
-                        variant='body1' 
-                        component='p' 
-                        onClick={handleSendCode}
-                        style={{ cursor: 'pointer' }} 
-                    >
-                        Send code
-                    </Typography>
+                    <div className='flex'>
+                        <Link 
+                            to='/auth/login'
+                            className='pr-2 w-full text-start text-blue-800 text-sm' 
+                            style={{ cursor: 'pointer' }} 
+                        >
+                            Go back
+                        </Link>
+                        <Typography 
+                            className='pr-2 w-full text-end text-blue-800 text-sm' 
+                            variant='body1' 
+                            component='p' 
+                            onClick={handleSendCode}
+                            style={{ cursor: 'pointer' }} 
+                        >
+                            Send code
+                        </Typography>
+                    </div>
+                
                     
                     <Button 
                         variant='contained' 

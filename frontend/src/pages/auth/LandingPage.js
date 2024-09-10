@@ -1,22 +1,39 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import Button from '@mui/material/Button';
 import placeholder from '../../assets/images/placeholder.png'
+import MenuIcon from '@mui/icons-material/Menu';
 
 const Header = () => {
+
+    const [hideMenu, setHideMenu] = useState(true)
+    
+    const handleHideMenu = (e) => {
+        e.preventDefault()
+        setHideMenu((prevCheck) => !prevCheck)
+    }
     return(
-        <div className='flex w-full justify-between items-center p-1'>
-            <p className='text-white'>ID finder</p>
-            <div className='items-center hidden md:flex basis-2/3 lg:basis-1/2 justify-around'>
-                <p className='text-white'>Home</p>
-                <p className='text-white'>About Us</p>
-                <p className='text-white'>How It Works</p>
-                <p className='text-white'>Benefits</p>
-                <Link className='text-white' to='/auth/login'>Login</Link>
-                <Button variant="contained">Get started now</Button>
+        <div>
+            <div className='flex justify-between items-center p-1'>
+                <p className='text-white'>ID finder</p>
+                <div className='items-center hidden md:flex basis-2/3 lg:basis-1/2 justify-around'>
+                    <p className='text-white'>Home</p>
+                    <p className='text-white'>About Us</p>
+                    <p className='text-white'>How It Works</p>
+                    <p className='text-white'>Benefits</p>
+                    <Link className='text-white' to='/auth/login'>Login</Link>
+                    <Button variant="contained">Get started now</Button>
+                </div>
+                <div className= 'md:hidden'>
+                    <MenuIcon className='text-white hover:cursor-pointer' onClick={(e) => handleHideMenu(e)} />
+                </div>
             </div>
-            <div className='md:hidden'>
-                <p>Small View</p>
+            <div className= {`${hideMenu? 'hidden': 'flex'} bg-white md:hidden m-2 rounded-md shadow-md pl-2 flex flex-col justify-start`}>
+                <p className='text-left hover:cursor-pointer'>Home</p>
+                <p className='text-left hover:cursor-pointer'>About Us</p>
+                <p className='text-left hover:cursor-pointer'>How it works</p>
+                <p className='text-left hover:cursor-pointer'>Benefits</p>
+                <Link className='self-left text-left hover:cursor-pointer' to='/auth/login'>Login</Link>
             </div>
         </div>
     )
@@ -110,7 +127,7 @@ const HowItWorks = () => {
                     <p className='rounded-full w-10 h-10 bg-green-600 text-white flex self-center items-center justify-center mb-32 md:mb-2'>2</p>
                     <p className='rounded-full w-10 h-10 bg-purple-800 text-white flex self-center items-center justify-center mb-32 md:mb-2'>3</p>
                 </div>
-                <div className='ml-4 md:ml-0 flex items-start flex-col md:flex-row justify-around'>
+                <div className='pl-4 md:pl-0 flex items-start flex-col md:flex-row justify-around'>
                     <div className='w-64 h-40 md:h-auto flex flex-col justify-left md:justify-center'>
                         <h1>REGISTER</h1>
                         <p className='self-left flex'>Create an account to access our services and search through our database to see if your ID has been posted</p>
