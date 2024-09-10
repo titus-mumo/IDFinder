@@ -1,5 +1,6 @@
 from django.db import models
-from django.conf import settings  # Use settings.AUTH_USER_MODEL for referencing custom user model
+from django.conf import settings 
+from django.core.files.storage import FileSystemStorage
 
 class ID(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ids_found')
