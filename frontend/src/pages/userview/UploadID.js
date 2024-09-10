@@ -133,8 +133,8 @@ export const UploadID = () => {
                 className="my-1 border-2 border-gray-200 p-0.5   rounded-md w-full text-xs md:text-sm"
                 type="file"
                 placeholder="Front image of the id"
-                value={frontImage}
-                onChange={(e) => handeEnterFrontImage(e)}
+                accept="image/*"
+                onChange={ handeEnterFrontImage}
                 disableUnderline
                 />
             <label htmlFor="back" className=" text-left self-start">
@@ -146,8 +146,8 @@ export const UploadID = () => {
                 className="my-1 border-2 border-gray-200 p-0.5   rounded-md w-full text-xs md:text-sm"
                 type="file"
                 placeholder="Back image of the id"
-                value={backImage}
-                onChange={(e) => handleEnterBackImage(e)}
+                accept="image/*"
+                onChange={handleEnterBackImage}
                 disableUnderline
                 />
              <Button variant='contained' type='submit' className='w-full text-xs md:text-sm' sx={{borderRadius: 3, paddingY: 1, marginTop: 4}}>Submit ID</Button>
