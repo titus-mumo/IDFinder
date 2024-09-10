@@ -53,7 +53,7 @@ export const SignUp = () => {
 
         }
 
-        axios.post(process.env.BASE_URL + '/auth/register/', data)
+        axios.post(process.env.BASE_URL + 'auth/register/', data)
         .then((response) => {
             showSnackBar("Sign Up success!")
             setTimeout(() => {
@@ -61,6 +61,7 @@ export const SignUp = () => {
             }, 1000)
         })
         .catch((error) => {
+            console.log(error)
             showSnackBar("An error occured")
         })
     }

@@ -3,7 +3,7 @@ from django.core.mail import send_mail
 from django.urls import reverse
 from django.utils.encoding import force_str
 from .serializers import SetNewPasswordSerializer
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
@@ -59,6 +59,27 @@ class LoginView(generics.GenericAPIView):
                 'phone_number': user.phone_number,
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class LogoutView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        try:
+            # Get the refresh token from the request data
+            refresh_token = request.data.get("refresh")
+
+            if refresh_token is None:
+                return Response({"error": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Blacklist the token (mark it as unusable)
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response({"message": "Logout successful. Token has been blacklisted."}, status=status.HTTP_205_RESET_CONTENT)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
 class PasswordResetView(generics.GenericAPIView):
     serializer_class = PasswordResetSerializer
     permission_classes = [AllowAny]
@@ -100,7 +121,7 @@ class PasswordResetView(generics.GenericAPIView):
 
 class PasswordResetConfirmView(generics.GenericAPIView):
     serializer_class = SetNewPasswordSerializer
-
+    permission_classes = [AllowAny]
     def post(self, request, uidb64, token, *args, **kwargs):
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))

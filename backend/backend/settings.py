@@ -9,7 +9,6 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
 from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -127,15 +126,42 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-DEFAULT_FROM_EMAIL = 'email@example.com'
 
-# TODO:Add your email server settings here
-EMAIL_HOST = 'smtp.example.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'example@example.com'
-EMAIL_HOST_PASSWORD = 'email-password'
+# Add your email server settings here
+import os
+from pathlib import Path
+from dotenv import load_dotenv  # Make sure you import this
+
+# Load environment variables from the .env file
+load_dotenv()
+
+# Get the environment type, defaulting to 'development' if not specified
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
+
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+EMAIL_ADDRESS = os.getenv('EMAIL_ADDRESS')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+
+if ENVIRONMENT == 'production':
+    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    EMAIL_HOST = 'smtp.gmail.com'
+    EMAIL_HOST_USER = os.getenv('EMAIL_ADDRESS')
+    EMAIL_HOST_PASSWORD =os.getenv('EMAIL_HOST_PASSWORD') 
+    EMAIL_PORT : 587
+    EMAIL_USE_TLS = True #cryptographic protocol that ensures secure communication between email servers.
+    DEFAULT_FROM_EMAIL = 'idfinderkenya'
+    ACCOUNT_EMAIL_SUBJECT_PREFIX = ''
+else:
+    EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+#verification phone setting
+from decouple import config
+
+TWILIO_ACCOUNT_SID = config('TWILIO_ACCOUNT_SID')
+TWILIO_AUTH_TOKEN = config('TWILIO_AUTH_TOKEN')
+TWILIO_PHONE_NUMBER = config('TWILIO_PHONE_NUMBER')
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases

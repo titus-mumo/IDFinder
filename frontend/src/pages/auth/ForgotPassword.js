@@ -1,6 +1,6 @@
 import { Typography, Input, Button } from '@mui/material'
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useSnackbar } from '../../providers/SnackProvider';
 
 export const ForgotPassword = () => {
@@ -86,16 +86,25 @@ export const ForgotPassword = () => {
                         />
                         }
                     </div>
-                    
-                    <Typography 
-                        className='pr-2 w-full text-end text-blue-800 text-sm' 
-                        variant='body1' 
-                        component='p' 
-                        onClick={handleSendCode}
-                        style={{ cursor: 'pointer' }} 
-                    >
-                        Send code
-                    </Typography>
+                    <div className='flex'>
+                        <Link 
+                            to='/auth/login'
+                            className='pr-2 w-full text-start text-blue-800 text-sm' 
+                            style={{ cursor: 'pointer' }} 
+                        >
+                            Go back
+                        </Link>
+                        <Typography 
+                            className='pr-2 w-full text-end text-blue-800 text-sm' 
+                            variant='body1' 
+                            component='p' 
+                            onClick={handleSendCode}
+                            style={{ cursor: 'pointer' }} 
+                        >
+                            Send code
+                        </Typography>
+                    </div>
+                
                     
                     <Button 
                         variant='contained' 
