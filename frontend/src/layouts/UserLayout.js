@@ -57,9 +57,13 @@ export const UserLayout = () => {
 
     const handleLogout = (e) => {
         e.preventDefault()
-        ApiCall('/logout', 'get', access, refresh, setAccess, setRefresh, {}, {}, false, showSnackBar)
+        const data = {
+            refresh: localStorage.getItem('refresh')
+        }
+        ApiCall('auth/logout/', 'post', access, refresh, setAccess, setRefresh, data, {}, false, showSnackBar)
         .then((response) => {
-            if(response && response.status && response.status === 200){
+            console.log(response)
+            if(response && response.status && response.status === 205){
                 logOut()
             }else{
                 throw new Error(response)

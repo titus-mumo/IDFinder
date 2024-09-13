@@ -17,7 +17,7 @@ export const IDsIFound = () => {
     ApiCall('api/ids/', 'get', access, refresh, setAccess, setRefresh, {}, {}, false, showSnackBar)
     .then((response) => {
       if(response && response.status && response.status === 200){
-        if(response.data >= 0){
+        if(response.data.length >= 0){
           setIDsIFound(response.data)
         }else{
           setIDsIFound(IDList)
