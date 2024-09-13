@@ -1,23 +1,22 @@
 import os
 import re
-from rest_framework import generics
-from .models import ID
-from .serializers import IDSerializer, IDListSerializer
+from rest_framework import generics, status
 from rest_framework.permissions import IsAuthenticated
-from django.core.files.storage import default_storage
-from rest_framework import status
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
+from django.core.files.storage import default_storage
+from django.conf import settings
+from .models import ID
+from .serializers import IDSerializer, IDListSerializer, MyIDListSerializer
 import pytesseract
 from PIL import Image
-from rest_framework.exceptions import ValidationError
-from django.conf import settings
 
 class IDCreateView(generics.CreateAPIView):
     queryset = ID.objects.all()
     serializer_class = IDSerializer
     permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
+    def post(self, serializer):
         # Check if the 'id_image' (front) and 'back_image' are in the request
         id_image = self.request.FILES.get('id_image', None)
         back_image = self.request.FILES.get('back_image', None)
@@ -87,16 +86,24 @@ class IDCreateView(generics.CreateAPIView):
                 os.remove(front_image_path)
             if os.path.exists(back_image_path):
                 os.remove(back_image_path)
+
 class IDListView(generics.ListAPIView):
-    serializer_class = IDListSerializer  # Serializer with limited fields (id_name, id_no)
+    serializer_class = IDListSerializer  # Serializer with limited fields (id_name, partial id_no)
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return ID.objects.all()  # Return all IDs with limited info (home view)
+        # Get all IDs with partial ID number display
+        ids = ID.objects.all()
+
+        # Blur out part of the ID number (e.g., 1234****)
+        for id in ids:
+            id.id_no = id.id_no[:4] + "****"  # Show only the first 4 digits
+
+        return ids
 
 class MyIDListView(generics.ListAPIView):
-    serializer_class = IDSerializer  # Serializer with all fields
+    serializer_class = MyIDListSerializer  # Serializer with all fields for the user's uploads
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return ID.objects.filter(user=self.request.user)  # Return only IDs found by the user
+        return ID.objects.filter(user=self.request.user)  # Return only IDs uploaded by the logged-in user
