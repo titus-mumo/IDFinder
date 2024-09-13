@@ -16,8 +16,8 @@ def id_image_upload_path(instance, filename):
 class ID(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ids_found')
     id_name = models.CharField(max_length=255)
-    sn = models.CharField(max_length=255)  # Serial number
-    id_no = models.CharField(max_length=255, unique=True)
+    sn = models.CharField(max_length=12)  # Serial number
+    id_no = models.CharField(max_length=8, unique=True)
     date_of_birth = models.DateField()
     gender = models.CharField(max_length=10)
     district_of_birth = models.CharField(max_length=255)

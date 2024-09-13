@@ -16,7 +16,7 @@ class IDCreateView(generics.CreateAPIView):
     serializer_class = IDSerializer
     permission_classes = [IsAuthenticated]
 
-    def perform_create(self, serializer):
+    def post(self, serializer):
         # Check if the 'id_image' (front) and 'back_image' are in the request
         id_image = self.request.FILES.get('id_image', None)
         back_image = self.request.FILES.get('back_image', None)

@@ -4,7 +4,7 @@ from .models import ID
 class IDSerializer(serializers.ModelSerializer):
     class Meta:
         model = ID
-        fields = ["__all__"]
+        fields = "__all__"
 
     def create(self, validated_data):
         return super().create(validated_data)
@@ -22,4 +22,4 @@ class IDListSerializer(serializers.ModelSerializer):
 class MyIDListSerializer(serializers.ModelSerializer):
     class Meta:
         model = ID
-        fields = ["__all__"]
+        fields = "__all__"

@@ -56,11 +56,15 @@ export const UserLayout = () => {
     }
 
     const handleLogout = (e) => {
+        const data = {
+            refresh: localStorage.getItem("refresh")
+            }
         e.preventDefault()
-        ApiCall('/logout', 'get', access, refresh, setAccess, setRefresh, {}, {}, false, showSnackBar)
+        ApiCall('auth/logout/', 'post', access, refresh, setAccess, setRefresh,data, {}, false, showSnackBar)
         .then((response) => {
-            if(response && response.status && response.status === 200){
+            if(response && response.status && response.status === 205){
                 logOut()
+                showSnackBar("logout successful")
             }else{
                 throw new Error(response)
             }
