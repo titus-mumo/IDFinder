@@ -14,7 +14,7 @@ export const AllRoutes = () => {
             <Route path='/auth/login' element={<Login />} />
             <Route path='/auth/register' element={<SignUp />} />
             <Route path='/auth/forgot-password' element={<ForgotPassword />} />
-            <Route path='/auth/reset-password' element={<ResetPassword />} />
+            <Route path='/auth/password-reset-confirm/:uidb64/:token' element={<ResetPassword />} />
             {/* <Route element={<PrivateRoutes />} > */}
                 <Route element={<UserLayout />} >
                 {/* <Route element={<ProtectUserRoutes />} > */}

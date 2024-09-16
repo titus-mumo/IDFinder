@@ -1,7 +1,7 @@
 import { Button, Input, Typography } from '@mui/material'
 import React, {useState} from 'react'
 import { Link } from 'react-router-dom'
-import { Google as GoogleIcon, Password, PasswordRounded, Visibility, VisibilityOff } from '@mui/icons-material';
+import { Google as GoogleIcon, PasswordRounded, Visibility, VisibilityOff } from '@mui/icons-material';
 import { useSnackbar } from '../../providers/SnackProvider';
 import { useNavigate } from 'react-router-dom';
 import EmailIcon from '@mui/icons-material/Email'; 
@@ -41,7 +41,6 @@ export const Login = () => {
         }else if(grantAccess.error){
             showSnackBar(grantAccess.error)
         }else{
-            console.log(grantAccess)
             localStorage.setItem('access', grantAccess.access)
             localStorage.setItem('refresh', grantAccess.refresh)
             showSnackBar("Login successful")

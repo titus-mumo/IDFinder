@@ -77,12 +77,12 @@ export const UserLayout = () => {
     <div className='flex flex-col'>
         <div className='flex justify-between bg-green-400 p-2'>
             <div>
+                <div className='md:hidden'>
                 {
                     showMenu? <CloseIcon onClick={(e) => handleDisplaySideBar(e)} className='md:hidden hover:cursor-pointer'/>:
                     <MenuIcon onClick={(e) => handleDisplaySideBar(e)} className='md:hidden hover:cursor-pointer'/>
                 }
-                    
-               
+                </div>
             </div>
             <p className='hover:cursor-pointer' onClick={(e) => handleLogout(e)}>LOGOUT</p>
         </div>

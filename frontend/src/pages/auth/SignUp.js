@@ -5,6 +5,9 @@ import { Google as GoogleIcon } from '@mui/icons-material';
 import { useSnackbar } from '../../providers/SnackProvider';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
 
 require('dotenv').config()
 
@@ -13,6 +16,8 @@ export const SignUp = () => {
     const [phoneNumber, setPhoneNumber] = useState('')
     const [password, setPassword] = useState('')
     const [confirmPassword, setConfirmPassword] = useState('')
+    const [seePassword, setSeePassword] = useState(false)
+    const [seeConfirmPassword, setSeeConfirmPassword] = useState(false) 
 
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
@@ -61,7 +66,6 @@ export const SignUp = () => {
             }, 1000)
         })
         .catch((error) => {
-            console.log(error)
             showSnackBar("An error occured")
         })
     }
@@ -86,9 +90,51 @@ export const SignUp = () => {
             </div>
             <form className='flex flex-col' onSubmit={(e) => handleRegisterWithEmail(e)}>
                 <Input className='mt-2 border-2 border-gray-200 px-2 py-1 rounded-full text-sm' type='text' placeholder='Enter your email' value={email} onChange={(e) => setEmail(e.target.value)} disableUnderline></Input>
-                <Input className='mt-2 border-2 border-gray-200 px-2 py-1 rounded-full text-sm' type='number' placeholder='Enter your phone number' value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} disableUnderline></Input>
-                <Input type='password' placeholder='Enter your password' className='mt-3 border-2 border-gray-200 px-2 py-1 rounded-full text-sm' value={password} onChange={(e) => setPassword(e.target.value)} disableUnderline></Input>
-                <Input type='password' placeholder='Confirm password' className='mt-3 border-2 border-gray-200 px-2 py-1 rounded-full text-sm' value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} disableUnderline></Input>
+                <Input 
+                    className='mt-2 border-2 border-gray-200 px-2 py-1 rounded-full text-sm' 
+                    type='number' 
+                    placeholder='Enter your phone number' 
+                    value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} 
+                    disableUnderline>
+                </Input>
+                <Input 
+                    type={seePassword? 'text': "password"}
+                    placeholder='Enter your password' 
+                    className='mt-3 border-2 border-gray-200 px-2 py-1 rounded-full text-sm' 
+                    value={password} 
+                    onChange={(e) => setPassword(e.target.value)} 
+                    disableUnderline
+                    endAdornment={
+                        <InputAdornment position='end'>
+                            <IconButton onClick={() => setSeePassword(prevCheck => !prevCheck)}>
+                                {
+                                    seePassword? <VisibilityOff className='hover:cursor-pointer' />:
+                                    <Visibility className='hover:cursor-pointer'/>
+                                }
+                            </IconButton>
+                        </InputAdornment>
+                    }
+                >
+
+                </Input>
+                <Input 
+                    type={seeConfirmPassword? 'text': "password"} 
+                    placeholder='Confirm password' 
+                    className='mt-3 border-2 border-gray-200 px-2 py-1 rounded-full text-sm' 
+                    value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} 
+                    disableUnderline
+                    endAdornment={
+                        <InputAdornment position='end'>
+                            <IconButton onClick={() => setSeeConfirmPassword(prevCheck => !prevCheck)}>
+                                {
+                                    seeConfirmPassword? <VisibilityOff className='hover:cursor-pointer' />:
+                                    <Visibility className='hover:cursor-pointer'/>
+                                }
+                            </IconButton>
+                        </InputAdornment>
+                    }
+                >
+                </Input>
                 <Button variant='contained' type='submit' className='w-full' sx={{borderRadius: 7, paddingY: 1.5, marginTop: 4}}>Sign Up</Button>
             </form>
             <div>

@@ -90,8 +90,11 @@ export const UploadID = () => {
                 onChange={(e) => setName(e.target.value)}
                 disableUnderline
                 />
+            <label htmlFor="date_of_birth" className="text-left w-full self-start">Date of birth</label>
             <Input
                 className="my-1 border-2 border-gray-200 p-0.5   rounded-md w-full text-xs md:text-sm"
+                name="date_of_birth"
+                id="date_of_birth"
                 type="date"
                 placeholder="Enter date of birth"
                 value={dateOfBirth}
@@ -116,8 +119,11 @@ export const UploadID = () => {
                 onChange={(e) => setDistrictOfBirth(e.target.value)}
                 disableUnderline
                 />
+            <label htmlFor="date_of_issue" className="text-left w-full self-start">Date of issue</label>
             <Input
                 className="my-1 border-2 border-gray-200 p-0.5   rounded-md w-full text-xs md:text-sm"
+                name="date_of_issue"
+                id="date_of_issue"
                 type="date"
                 placeholder="Enter date of issue"
                 value={ dateOfIssue}

@@ -24,7 +24,6 @@ export const IDDetail = () => {
             if(response && response.status && response.status === 200){
                 setIDDetails(response.data)
             }else{
-                console.log(response)
                 throw new Error(response)
             }
         })

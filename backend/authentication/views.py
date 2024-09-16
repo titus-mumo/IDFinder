@@ -88,6 +88,7 @@ class PasswordResetView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data['email']
+        base_url = serializer.validated_data['base_url']
         
         try:
             user = User.objects.get(email=email)
@@ -97,11 +98,9 @@ class PasswordResetView(generics.GenericAPIView):
         # Generate password reset token and UID
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
-        
         # Create password reset link
-        reset_link = request.build_absolute_uri(
-            reverse('password-reset-confirm', kwargs={'uidb64': uid, 'token': token})
-        )
+        
+        reset_link = base_url + '/auth/password-reset-confirm/' + uid + '/' + token + '/'
 
         # Send email
         send_mail(
@@ -136,7 +135,7 @@ class PasswordResetConfirmView(generics.GenericAPIView):
             user.save()
             return Response({"message": "Password has been reset successfully."})
         else:
-            return Response({"error": "Invalid token or UID."}, status=400)
+            return Response({"error": "Invalid reset link"}, status=400)
 
 
 class RefreshTokenView(generics.GenericAPIView):

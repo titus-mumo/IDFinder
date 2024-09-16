@@ -59,6 +59,7 @@ class LogoutSerializer(serializers.Serializer):
 
 class PasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField()
+    base_url = serializers.CharField()
 
     def validate_email(self, value):
         if not User.objects.filter(email=value).exists():
