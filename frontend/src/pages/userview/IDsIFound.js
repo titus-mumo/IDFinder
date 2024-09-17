@@ -18,14 +18,10 @@ export const IDsIFound = () => {
 
   const showSnackBar = useSnackbar()
   useEffect(() => {
-    ApiCall('api/ids/', 'get', access, refresh, setAccess, setRefresh, {}, {}, false, showSnackBar)
+    ApiCall('api/ids/my', 'get', access, refresh, setAccess, setRefresh, {}, {}, false, showSnackBar)
     .then((response) => {
       if(response && response.status && response.status === 200){
-        if(response.data.length > 0){
-          setIDsIFound(response.data)
-        }else{
-          setIDsIFound(IDList)
-        }
+        setIDsIFound(response.data)
         return
       }
       throw new Error(response.error)
@@ -48,7 +44,7 @@ export const IDsIFound = () => {
       </div>
       <div className='flex justify-center flex-col w-full mt-10'>
         {
-          IDsIFound.map((id, index) => <IDFoundComponent id={id} key={index} />)
+          IDsIFound.length > 0? IDsIFound.map((id, index) => <IDFoundComponent id={id} key={index} />) : 'IDs you find will be displayed here'
         }
       </div>
     </div>

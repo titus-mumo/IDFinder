@@ -10,5 +10,6 @@ urlpatterns = [
     path('password-reset/confirm/', views.PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
     path('refresh-token/', views.RefreshTokenView.as_view(), name='refresh_token'),
     path('verify-code/', views.VerifyCodeView.as_view(), name='verify_code'),
+    path('check-if-user-is-admin/', views.CheckIfUserIsAdmin.as_view(), name='user_category')
     # Add more API endpoints as needed
 ]

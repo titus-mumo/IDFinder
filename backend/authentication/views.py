@@ -20,6 +20,8 @@ from .serializers import (
     VerifyCodeSerializer
 )
 
+from django.http import JsonResponse
+
 User = get_user_model()
 
 class RegisterView(generics.CreateAPIView):
@@ -147,7 +149,6 @@ class RefreshTokenView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         refresh = serializer.validated_data['refresh']
         token = RefreshToken(refresh)
-        print(token)
         return Response({
             'access': str(token.access_token),
             'refresh': str(token)
@@ -171,3 +172,10 @@ class VerifyCodeView(generics.GenericAPIView):
                 'phone_number': user.phone_number,
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class CheckIfUserIsAdmin(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return JsonResponse({"staff": user.is_staff}, status = status.HTTP_200_OK)

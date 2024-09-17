@@ -5,7 +5,7 @@ import { useAuth } from '../providers'
 import { useSnackbar } from '../providers/SnackProvider'
 
 
-const ProtectUserRoutes = () => {
+const ProtectAdminRoutes = () => {
 
   const navigate = useNavigate()
 
@@ -20,8 +20,8 @@ const ProtectUserRoutes = () => {
     ApiCall('auth/check-if-user-is-admin/', 'get', access, refresh, setAccess, setRefresh, {}, {}, {}, showSnackBar)
     .then((response) => {
       if(response && response.status && response.status === 200){
-        if(response.data.staff === true){
-          return navigate('/admin/home')
+        if(response.data.staff === false){
+          return navigate('/home')
         }
       }
 
@@ -40,4 +40,4 @@ const ProtectUserRoutes = () => {
   )
 }
 
-export default ProtectUserRoutes;
+export default ProtectAdminRoutes;

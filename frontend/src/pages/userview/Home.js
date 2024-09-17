@@ -18,17 +18,13 @@ export const Home = () => {
     .then(async (response) => {
       if(response && response.status && response.status === 200){
         setExistingIDs(response.data)
+        return
       }else{
-        setExistingIDs(IDList)
         throw new Error(response)
-
-      }
-      if(existingIDs.length === 0){
-        setExistingIDs(IDList)
       }
     })
     .catch((error) => {
-      showSnackbar("An error occured")
+      showSnackbar(error.response.data.error)
     })
   }, [])
 

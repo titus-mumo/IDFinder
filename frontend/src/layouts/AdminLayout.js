@@ -17,32 +17,32 @@ import CloseIcon from '@mui/icons-material/Close';
 const useSideBarItems = [
     {
         title: "Home",
-        link: '/home',
+        link: '/admin/home',
         icon: <HomeIcon />
     },
     {
-        title: "IDs I Found",
-        link: '/ids-i-found',
+        title: "Claims",
+        link: '/admin/claims',
         icon: <HomeIcon />
     },
     {
-        title: "Contact Admin",
-        link: '/contact-admin',
+        title: "Messaging",
+        link: '/admin/chats',
         icon: <ContactEmergencyIcon />
     },
     {
         title: "Search",
-        link: '/search',
+        link: '/admin/search',
         icon: <SearchIcon />
     },
     {
         title: "Profile",
-        link: '/profile',
+        link: '/admin/profile',
         icon: <AccountBoxIcon />
     },
 ]
 
-export const UserLayout = () => {
+export const AdminLayout = () => {
     const [showMenu, setShowMenu] = useState(false)
 
     const showSnackBar = useSnackbar()
