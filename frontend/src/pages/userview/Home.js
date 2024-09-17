@@ -5,6 +5,7 @@ import { ApiCall } from '../../hooks'
 import { useAuth } from '../../providers'
 import { useEffect } from 'react'
 import { useSnackbar } from '../../providers/SnackProvider'
+import { resolve } from 'path'
 
 export const Home = () => {
   const userAuth = useAuth()
@@ -17,11 +18,13 @@ export const Home = () => {
     ApiCall('/api/ids', 'get',access, refresh, setAccess, setRefresh, {}, {}, false, showSnackbar)
     .then(async (response) => {
       if(response && response.status && response.status === 200){
-        setExistingIDs(response.data)
+        if(response.data !== undefined && response.data.length > 0){
+          setExistingIDs(response.data)
+          return
+        }
         return
-      }else{
-        throw new Error(response)
       }
+      throw new Error(response)
     })
     .catch((error) => {
       showSnackbar(error.response.data.error)
@@ -32,7 +35,7 @@ export const Home = () => {
     <div className='flex justify-center'>
       <div className='flex justify-center flex-col w-full mt-10'>
         {
-          existingIDs.map((id, index) => <IDDisplayComponent id={id} key={index} />)
+          existingIDs.length > 0? existingIDs.map((id, index) => <IDDisplayComponent id={id} key={index} />): 'Found IDs will appear here'
         }
       </div>
     </div>
