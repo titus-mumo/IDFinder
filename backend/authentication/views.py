@@ -147,8 +147,10 @@ class RefreshTokenView(generics.GenericAPIView):
         serializer.is_valid(raise_exception=True)
         refresh = serializer.validated_data['refresh']
         token = RefreshToken(refresh)
+        print(token)
         return Response({
-            'access': str(token.access_token)
+            'access': str(token.access_token),
+            'refresh': str(token)
         })
 
 

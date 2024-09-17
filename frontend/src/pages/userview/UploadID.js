@@ -45,8 +45,8 @@ export const UploadID = () => {
 
         ApiCall('api/ids/add/', 'post', access, refresh, setAccess, setRefresh, formData, {}, true, showSnackBar)
         .then((response) => {
-            if(response && response.status && response.status === 200){
-                showSnackBar("ID added successfully!")
+            if(response && response.status && response.status === 201){
+                showSnackBar(response.data.message)
                 return
             }
             throw new Error(response.error)
