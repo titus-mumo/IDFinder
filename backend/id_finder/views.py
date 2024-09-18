@@ -101,7 +101,7 @@ class IDListView(generics.ListAPIView):
 
     def get_queryset(self):
         # Get all IDs with partial ID number display
-        ids = ID.objects.all()
+        ids = ID.objects.exclude(user = self.request.user)
 
         # Blur out part of the ID number (e.g., 1234****)
         for id in ids:
