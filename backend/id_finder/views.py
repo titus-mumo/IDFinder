@@ -117,6 +117,11 @@ class MyIDListView(generics.ListAPIView):
     def get_queryset(self):
         return ID.objects.filter(user=self.request.user)  # Return only IDs uploaded by the logged-in user
 class VerifyIDView(APIView):
+    """ user submits a POST request to VerifyIDView with their ID number, personal details, and a selfie image.
+The view verifies the provided information against the retrieved ID record and performs facial recognition using the ImageMatcher class.
+If all checks pass, a success response is returned.
+An admin can then approve or reject the user's verification claim through the ApproveIDClaim view. The claim status is updated accordingly, and relevant actions (e.g., marking the ID as claimed) are taken."""
+
     permission_classes = [IsAuthenticated]
 
     def post(self, request, id_no):

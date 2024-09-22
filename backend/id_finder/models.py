@@ -30,6 +30,7 @@ class ID(models.Model):
         self.user = user
         self.save()
 # New model for handling ID claims
+"""The IDClaim model acts as a bridge between the ID model and the user who is making the claim. It tracks the status of the claim and provides a way to associate the claim with both the ID document and the user."""
 class IDClaim(models.Model):
     STATUS_CHOICES = (
         ('pending', 'Pending'),

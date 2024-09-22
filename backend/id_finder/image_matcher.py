@@ -2,6 +2,10 @@ import boto3
 from django.conf import settings
 
 class ImageMatcher:
+    """
+    This class provides a wrapper for Amazon Rekognition service to compare faces in images.
+    It utilizes AWS credentials and region information from Django and .env.
+    """
     def __init__(self):
         self.client = boto3.client(
             'rekognition',
@@ -11,6 +15,17 @@ class ImageMatcher:
         )
 
     def compare_faces(self, source_image_path, target_image_path):
+        """
+        Compares faces in two images using Amazon Rekognition.
+
+        Args:
+            source_image_path (str): Path to the source image file.
+            target_image_path (str): Path to the target image file.
+
+        Returns:
+            float: Similarity score (0.0 to 100.0) between the most similar faces in the images,
+                   or 0.0 if no match is found.
+        """
         with open(source_image_path, 'rb') as source_file:
             source_bytes = source_file.read()
         with open(target_image_path, 'rb') as target_file:
