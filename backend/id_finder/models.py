@@ -23,3 +23,25 @@ class ID(models.Model):
 
     def __str__(self):
         return f"{self.id_name} - {self.id_no}"
+    
+    def mark_as_claimed(self, user):
+        """Mark the ID as claimed by the user"""
+        self.id_status = 'Claimed'
+        self.user = user
+        self.save()
+# New model for handling ID claims
+class IDClaim(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    )
+
+    id_found = models.ForeignKey(ID, on_delete=models.CASCADE, related_name='claims')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='claims')
+    claim_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} claims {self.id_found.id_no}"
+
