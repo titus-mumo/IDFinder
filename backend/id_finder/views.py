@@ -132,16 +132,13 @@ An admin can then approve or reject the user's verification claim through the Ap
 
         # Get user-provided details
         id_name = request.data.get('id_name')
-        id_no = request.data.get('id_no')
         date_of_birth = request.data.get('date_of_birth')
         district_of_birth = request.data.get('district_of_birth')
         user_image = request.FILES.get('selfie')
 
         # Match the ID name, date of birth, and district
         if id_name != id_record.id_name:
-            return Response({"detail": "ID Name does not match"}, status=400)
-        if id != id_record.id_no:
-            return Response({"details": "ID number does not match"})# added the id_number 
+            return Response({"detail": "ID Name does not match"}, status=400) 
         if date_of_birth != str(id_record.date_of_birth):
             return Response({"detail": "Date of Birth does not match"}, status=400)
         if district_of_birth != id_record.district_of_birth:
