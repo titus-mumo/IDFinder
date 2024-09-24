@@ -17,13 +17,13 @@ export const AdminHome = () => {
                 <CountCard name='Total Found IDs' count={totalIds}/>
             </div>
             <div className='flex justify-center'>
-                <CountCard name='Total Claimed IDs' count={totalIds}/>
+                <CountCard name='Total Claimed IDs' count={idsClaimed}/>
             </div>
             <div className='flex justify-center'>
-                <CountCard name='IDs Found This Month' count={totalIds}/>
+                <CountCard name='IDs Found This Month' count={idsFoundThisMonth}/>
             </div>
             <div className='flex justify-center'>
-                <CountCard name='Total Claimed IDs This Month' count={totalIds}/>
+                <CountCard name='Total Claimed IDs This Month' count={idsClaimedThisMonth}/>
             </div>
         </div>
         </div>

@@ -62,15 +62,7 @@ export const UserLayout = () => {
         e.preventDefault()
         ApiCall('auth/logout/', 'post', access, refresh, setAccess, setRefresh,data, {}, false, showSnackBar)
         .then((response) => {
-            if(response && response.status && response.status === 205){
-                logOut()
-                showSnackBar("logout successful")
-            }else{
-                throw new Error(response)
-            }
-        })
-        .catch((error) => {
-            showSnackBar(error.error || "Something went wrong")
+            logOut()
         })
     }
   return (
