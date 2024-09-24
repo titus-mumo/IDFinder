@@ -9,6 +9,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "backend.settings")
 django_asgi_app = get_asgi_application()
 
 from messaging.routing import websocket_urlpatterns
+from search.routing import websocket_search_urlpatterns
 
 application = ProtocolTypeRouter(
     {
@@ -16,8 +17,9 @@ application = ProtocolTypeRouter(
         "websocket": AllowedHostsOriginValidator(
             AuthMiddlewareStack(
                 URLRouter(
-                    websocket_urlpatterns
-                )
+                    websocket_urlpatterns + websocket_search_urlpatterns
+                ),
+                
             )
         ),
     }

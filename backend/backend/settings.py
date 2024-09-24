@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'messaging',
+    'search',
     'id_finder',
     'authentication',
     'django_linear_migrations',
