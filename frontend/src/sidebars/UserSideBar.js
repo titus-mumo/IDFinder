@@ -40,7 +40,7 @@ export const UserSideBar = ({ showMenu, setShowMenu, sidebarItems }) => {
         showMenu === false ? 'hidden' : 'flex'
       } fixed lg:relative lg:flex bg-blue-500 text-white flex-col items-start ${
         collapse ? 'w-16' : 'w-52 lg:w-64'
-      } h-screen`}
+      }  lg:flex-grow h-auto`}
     >
       <div
         className={`w-full flex ${

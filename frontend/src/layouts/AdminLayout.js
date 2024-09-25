@@ -74,7 +74,7 @@ export const AdminLayout = () => {
         })
     }
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col h-screen flex-grow'>
         <div className='flex justify-between bg-green-400 p-2'>
             <div>
                 <div className='lg:hidden'>
@@ -86,7 +86,7 @@ export const AdminLayout = () => {
             </div>
             <p className='hover:cursor-pointer' onClick={(e) => handleLogout(e)}>LOGOUT</p>
         </div>
-        <div className='lg:flex'>
+        <div className='lg:flex flex-grow'>
             <UserSideBar showMenu={showMenu} setShowMenu={setShowMenu} sidebarItems={useSideBarItems}/>
             <div className='w-full'>
                 <div className=' md:w-auto'>

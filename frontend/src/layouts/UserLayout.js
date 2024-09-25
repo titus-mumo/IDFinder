@@ -62,19 +62,11 @@ export const UserLayout = () => {
         e.preventDefault()
         ApiCall('auth/logout/', 'post', access, refresh, setAccess, setRefresh,data, {}, false, showSnackBar)
         .then((response) => {
-            if(response && response.status && response.status === 205){
-                logOut()
-                showSnackBar("logout successful")
-            }else{
-                throw new Error(response)
-            }
-        })
-        .catch((error) => {
-            showSnackBar(error.error || "Something went wrong")
+            logOut()
         })
     }
   return (
-    <div className='flex flex-col'>
+    <div className='flex flex-col h-screen'>
         <div className='flex justify-between bg-green-400 p-2'>
             <div>
                 <div className='lg:hidden'>
@@ -86,10 +78,10 @@ export const UserLayout = () => {
             </div>
             <p className='hover:cursor-pointer' onClick={(e) => handleLogout(e)}>LOGOUT</p>
         </div>
-        <div className='lg:flex'>
+        <div className='flex flex-grow'>
             <UserSideBar showMenu={showMenu} setShowMenu={setShowMenu} sidebarItems={useSideBarItems}/>
             <div className='w-full'>
-                <div className=' md:w-auto'>
+                <div className='md:w-auto '>
                     <Outlet />
                 </div>
             </div>
