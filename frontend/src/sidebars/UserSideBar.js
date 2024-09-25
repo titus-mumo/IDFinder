@@ -43,15 +43,15 @@ export const UserSideBar = ({ showMenu, setShowMenu, sidebarItems }) => {
       } h-screen`}
     >
       <div
-        className={`w-full flex hover:cursor-pointer hover:bg-blue-800 py-0.5 ${
-          collapse ? 'justify-center' : 'justify-end py-0.5'
+        className={`w-full flex ${
+          collapse ? 'justify-center' : 'justify-end'
         }`}
         onClick={() => setCollapse((preCheck) => !preCheck)}
       >
         {collapse ? (
-          <ArrowForwardIosIcon className="text-black" />
+          <ArrowForwardIosIcon className="text-lg rounded-md hover:cursor-pointer hover:bg-blue-800 p-1" />
         ) : (
-          <ArrowBackIosIcon className="text-black" />
+          <ArrowBackIosIcon className="text-lg rounded-md hover:cursor-pointer hover:bg-blue-800 p-1" />
         )}
       </div>
       <div className="flex flex-col justify-center p-1 w-full">

@@ -13,8 +13,8 @@ class IDAdmin(admin.ModelAdmin):
     readonly_fields = ('id_image_tag',)
     
     def id_image_tag(self, obj):
-        if obj.id_image:
-            return format_html(f'<img src="{obj.id_image.url}" width="100" height="100" />')
+        if obj.front_image:
+            return format_html(f'<img src="{obj.front_image.url}" width="100" height="100" />')
         return "No Image"
     id_image_tag.short_description = 'ID Image'
 

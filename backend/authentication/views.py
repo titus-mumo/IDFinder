@@ -20,6 +20,8 @@ from .serializers import (
     VerifyCodeSerializer
 )
 
+from django.http import JsonResponse
+
 User = get_user_model()
 
 class RegisterView(generics.CreateAPIView):
@@ -75,7 +77,7 @@ class LogoutView(generics.GenericAPIView):
             token = RefreshToken(refresh_token)
             token.blacklist()
 
-            return Response({"message": "Logout successful."}, status=status.HTTP_205_RESET_CONTENT)
+            return Response({"message": "Logout successful. Token has been blacklisted."}, status=status.HTTP_205_RESET_CONTENT)
 
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
@@ -88,6 +90,7 @@ class PasswordResetView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data['email']
+        base_url = serializer.validated_data['base_url']
         
         try:
             user = User.objects.get(email=email)
@@ -97,11 +100,9 @@ class PasswordResetView(generics.GenericAPIView):
         # Generate password reset token and UID
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
-        
         # Create password reset link
-        reset_link = request.build_absolute_uri(
-            reverse('password-reset-confirm', kwargs={'uidb64': uid, 'token': token})
-        )
+        
+        reset_link = base_url + '/auth/password-reset-confirm/' + uid + '/' + token + '/'
 
         # Send email
         send_mail(
@@ -136,7 +137,7 @@ class PasswordResetConfirmView(generics.GenericAPIView):
             user.save()
             return Response({"message": "Password has been reset successfully."})
         else:
-            return Response({"error": "Invalid token or UID."}, status=400)
+            return Response({"error": "Invalid reset link"}, status=400)
 
 
 class RefreshTokenView(generics.GenericAPIView):
@@ -149,7 +150,8 @@ class RefreshTokenView(generics.GenericAPIView):
         refresh = serializer.validated_data['refresh']
         token = RefreshToken(refresh)
         return Response({
-            'access': str(token.access_token)
+            'access': str(token.access_token),
+            'refresh': str(token)
         })
 
 
@@ -170,3 +172,10 @@ class VerifyCodeView(generics.GenericAPIView):
                 'phone_number': user.phone_number,
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class CheckIfUserIsAdmin(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return JsonResponse({"staff": user.is_staff}, status = status.HTTP_200_OK)

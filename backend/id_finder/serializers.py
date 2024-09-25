@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import ID
+from .models import ID, IDClaim
 
 class IDSerializer(serializers.ModelSerializer):
     class Meta:
@@ -23,3 +23,7 @@ class MyIDListSerializer(serializers.ModelSerializer):
     class Meta:
         model = ID
         fields = "__all__"
+class IDClaimSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IDClaim
+        fields = ['id_found', 'user', 'claim_status', 'created_at']

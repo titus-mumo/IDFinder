@@ -34,18 +34,19 @@ export const ApiCall = async (endpoint, method, access, refresh, setAccess, setR
         if (error.response && error.response.status === 401) {
             // Token has expired, attempt to refresh it
             try {
-                let response = await refreshAccessToken(refresh);
-                let {newAccess, newRefresh} = response
+                const local_refresh = localStorage.getItem('refresh')
+                let response = await refreshAccessToken(local_refresh);
+                let {access, refresh} = response
                 if (access) {
-                    setAccess(newAccess);
-                    setRefresh(newRefresh);
-                    localStorage.setItem("access", newAccess);
-                    localStorage.setItem("refresh", newRefresh);
+                    setAccess(access);
+                    setRefresh(refresh);
+                    localStorage.setItem("access", access);
+                    localStorage.setItem("refresh", refresh);
 
                     let refetchedData;
 
                     // Retry the original request with the new token
-                    headers["Authorization"] = `Bearer ${newAccess}`;
+                    headers["Authorization"] = `Bearer ${access}`;
                     if (method === 'post') {
                         refetchedData = await api.post(endpoint, data, { headers });
                     } else if (method === 'get') {

@@ -1,17 +1,9 @@
 from django.db import models
 from django.conf import settings
-from PIL import Image
-import os
-from io import BytesIO
-from django.core.files.base import ContentFile
 
 # Function to define the path for uploaded images
 def id_image_upload_path(instance, filename):
-    extension = filename.split('.')[-1]
-    if 'back_image' in filename:
-        return f'id_images/{instance.id_no}/back.{extension}'
-    else:
-        return f'id_images/{instance.id_no}/front.{extension}'
+    return f'id_images/{instance.id_no}/{filename}'
 
 class ID(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ids_found')
@@ -24,35 +16,33 @@ class ID(models.Model):
     date_of_issue = models.DateField()
 
     # Save front and back images in their respective folders based on id_no
-    front_image = models.ImageField(upload_to=id_image_upload_path, default='id_images/front/default.jpg')
-    back_image = models.ImageField(upload_to=id_image_upload_path, default='id_images/back/default.jpg')
+    front_image = models.ImageField(upload_to=id_image_upload_path)
+    back_image = models.ImageField(upload_to=id_image_upload_path)
 
     id_status = models.CharField(max_length=20, choices=[('Found', 'Found'), ('Claimed', 'Claimed')])
 
-    def save(self, *args, **kwargs):
-        # Compress and convert images before saving them
-        if self.front_image:
-            self.front_image = self.compress_image(self.front_image, 'front')
-        if self.back_image:
-            self.back_image = self.compress_image(self.back_image, 'back')
-
-        super().save(*args, **kwargs)
-
-    # Compression and conversion logic
-    def compress_image(self, uploaded_image, image_type):
-        img = Image.open(uploaded_image)
-        img_io = BytesIO()
-        
-        # Compress and convert the image
-        img_format = 'JPEG' if img.mode in ('RGB', 'RGBA') else 'PNG'  # Convert to JPEG or PNG based on mode
-        img = img.convert('RGB')  # Convert to RGB for JPEG
-        
-        img.save(img_io, format=img_format, quality=70)  # Compress to 70% quality
-        
-        # Create a new Django file object for saving
-        new_image = ContentFile(img_io.getvalue(), f'{image_type}.{img_format.lower()}')
-        
-        return new_image
-
     def __str__(self):
         return f"{self.id_name} - {self.id_no}"
+    
+    def mark_as_claimed(self, user):
+        """Mark the ID as claimed by the user"""
+        self.id_status = 'Claimed'
+        self.user = user
+        self.save()
+# New model for handling ID claims
+"""The IDClaim model acts as a bridge between the ID model and the user who is making the claim. It tracks the status of the claim and provides a way to associate the claim with both the ID document and the user."""
+class IDClaim(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('approved', 'Approved'),
+        ('rejected', 'Rejected'),
+    )
+
+    id_found = models.ForeignKey(ID, on_delete=models.CASCADE, related_name='claims')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='claims')
+    claim_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user} claims {self.id_found.id_no}"
+

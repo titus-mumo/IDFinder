@@ -13,7 +13,7 @@ export const refreshAccessToken = async (refreshToken) => {
     });
 
     try {
-        const response = await api.post('auth/token/refresh/', { refresh: refreshToken });
+        const response = await api.post('auth/refresh-token/', { refresh: refreshToken });
         data = response.data
         return data;
     } catch (error) {
