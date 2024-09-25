@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from rest_framework import views, status, generics
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from .models import Chats
 from .serializers import ChatRoomSerializer, MessageSerializer
 from django.contrib.auth import get_user_model
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import Chats, Message
+from django.db.models import OuterRef, Subquery
 
 User = get_user_model()
 
@@ -21,6 +22,19 @@ class ViewChats(generics.ListAPIView):
         chat = Chats.objects.filter(user = self.request.user).first()
         return Message.objects.filter(chat=chat).order_by('timestamp')
 
+
+class AdminViewChats(generics.ListAPIView):
+    permission_classes = [IsAdminUser]
+    serializer_class = ChatRoomSerializer
+
+    def get_queryset(self):
+        # Subquery to get the latest message for each chat
+        latest_message = Message.objects.filter(chat=OuterRef('pk')).order_by('-timestamp').values('message')[:1]
+
+        # Annotate the Chats queryset with the latest message
+        chats = Chats.objects.annotate(latest_message=Subquery(latest_message))
+        return chats
+        
 
 
 

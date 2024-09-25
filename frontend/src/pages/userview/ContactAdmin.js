@@ -62,7 +62,15 @@ export const ContactAdmin = () => {
     ws.current.onerror = (error) => {
       setChatMessages([])
     }
+    ws.current.onmessage = (e) => {
+      const data = JSON.parse(e.data);
+      data['timestamp'] = new Date();
+      data['user'] = username
+      setChatMessages(prevMessages => [...prevMessages, data]);
+    }
   }, [roomName])
+
+
 
   const handleSendMessage = async(e) => {
     e.preventDefault()
@@ -71,13 +79,23 @@ export const ContactAdmin = () => {
         ws.current.send(JSON.stringify({ message, user:username }));
         setMessage('');
     }
-
   }
+  const scrollToBottom = () => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [groupedMessages]);
   return (
-    <div className='flex flex-col justify-between h-auto p-2 border-2 border-gray-900'>
+    <div className='flex flex-col justify-between p-2'>
       <div>Admin</div>
+      <div className='flex flex-col justify-end self-center min-h-[600px] max-h-[600px] max-w-[700px] min-w-[500px] overflow-x-auto rounded-md border-2 border-gray-800 p-1'>
+      <div className='overflow-y-auto max-h-[550px] min-h-[500px]'>
       <div className='flex flex-col '>
-      <div className='flex w-full flex-col mx-1'>
+      <div className='flex w-full flex-col mx-1 '>
         {Object.keys(groupedMessages).map((date) => (
           <div key={date} className='my-1'>
             <div className='text-md font-medium text-center mb-0.5'>{date}</div>
@@ -91,10 +109,12 @@ export const ContactAdmin = () => {
           <div ref={messagesEndRef} />
         </div>
       </div>
-      <form className='flex w-full justify-between mt-2' onSubmit={(e) => handleSendMessage(e)}>
+      </div>
+      <form className='flex self-end w-full justify-between mt-2' onSubmit={(e) => handleSendMessage(e)}>
         <input className='basis-4/5 rounded-md shadow-md p-1 border-2 border-gray-200' placeholder='Enter message here ' value={message} onChange={(e) => setMessage(e.target.value)}></input>
         <button type='submit' className='bg-gray-900 rounded-md text-white p-1.5 px-3'>Send</button>
       </form>
+      </div>
     </div>
   )
 }
@@ -134,7 +154,6 @@ const groupMessagesByDate = (messages) => {
   sortedDates.forEach(date => {
     sortedGroupedMessages[date] = groupedMessages[date];
   });
-  console.log(sortedGroupedMessages)
 
   return sortedGroupedMessages;
 };

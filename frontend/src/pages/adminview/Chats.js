@@ -10,7 +10,7 @@ export const AdminChats = () => {
   const showSnackBar = useSnackbar()
   const {access, refresh, setAccess, setRefresh} = userAuth
   useEffect(() => {
-    ApiCall('messaging/view-chats/', 'get', access, refresh, setAccess, setRefresh, {}, {}, {}, showSnackBar)
+    ApiCall('/messaging/admin/view-chats/', 'get', access, refresh, setAccess, setRefresh, {}, {}, {}, showSnackBar)
     .then((response) => {
       if(response && response.status !== undefined && response.status === 200){
         return setChats(response.data)
@@ -20,33 +20,22 @@ export const AdminChats = () => {
     .catch((error) => {
       showSnackBar("An error occured")
     })
-  }, [roomName])
-  useEffect(() => {
-    ApiCall('messaging/fetch_chat_room_name/', 'get', access, refresh, setAccess, setRefresh, {}, {}, {}, showSnackBar)
-    .then((response) => {
-      if(response && response.status !== undefined && response.data === 200){
-        setRoomName(response.data.room_name)
-
-      }
-    })
-    .catch((error) => {
-      showSnackBar(error.response.data.error)
-    })
-
   }, [])
   return (
-    <div>
-      {
-        chats.length > 0? chats.map((chat) => <ShowChat chat={chat}/>): 'Chats will display here'
-      }
+    <div className='flex'>
+      <div className='self-start'>
+        {
+          chats.length > 0? chats.map((chat) => <ShowChat chat={chat}/>): 'Chats will display here'
+        }
+      </div>
     </div>
   )
 }
 
 const ShowChat = ({chat}) => {
   return(
-    <div>
-      <p>{}</p>
+    <div className='p-2 rounded-md hover:bg-gray-200 hover:cursor-pointer w-full'>
+      <p className='text-left'>{chat.room}</p>
     </div>
   )
 }
