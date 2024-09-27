@@ -1,17 +1,19 @@
 import os
 import re
+from rest_framework.views import APIView
 from rest_framework import generics, status, views
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.conf import settings
-from .models import ID
-from .serializers import IDSerializer, IDListSerializer, MyIDListSerializer
+from .models import ID, IDClaim
+from .serializers import IDSerializer, IDListSerializer, MyIDListSerializer, IDClaimSerializer
 import pytesseract
 from PIL import Image
 from django.core.files.base import ContentFile
 from django.http import JsonResponse
+from .image_matcher import ImageMatcher
 from django.utils import timezone
 
 
@@ -116,6 +118,66 @@ class MyIDListView(generics.ListAPIView):
 
     def get_queryset(self):
         return ID.objects.filter(user=self.request.user)  # Return only IDs uploaded by the logged-in user
+class VerifyIDView(APIView):
+    """ user submits a POST request to VerifyIDView with their ID number, personal details, and a selfie image.
+The view verifies the provided information against the retrieved ID record and performs facial recognition using the ImageMatcher class.
+If all checks pass, a success response is returned.
+An admin can then approve or reject the user's verification claim through the ApproveIDClaim view. The claim status is updated accordingly, and relevant actions (e.g., marking the ID as claimed) are taken."""
+
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, id_no):
+        try:
+            id_record = ID.objects.get(id_no=id_no)
+        except ID.DoesNotExist:
+            return Response({"detail": "ID not found."}, status=404)
+
+        # Get user-provided details
+        id_name = request.data.get('id_name')
+        date_of_birth = request.data.get('date_of_birth')
+        district_of_birth = request.data.get('district_of_birth')
+        user_image = request.FILES.get('selfie')
+
+        # Match the ID name, date of birth, and district
+        if id_name != id_record.id_name:
+            return Response({"detail": "ID Name does not match"}, status=400) 
+        if date_of_birth != str(id_record.date_of_birth):
+            return Response({"detail": "Date of Birth does not match"}, status=400)
+        if district_of_birth != id_record.district_of_birth:
+            return Response({"detail": "District does not match"}, status=400)
+
+        # Image matching logic
+        if user_image:
+            matcher = ImageMatcher()
+            match_score = matcher.compare_faces(user_image.path, id_record.front_image.path)
+            if match_score < 80:
+                return Response({"detail": "Face not matched", "match_score": match_score}, status=400)
+
+        # All details match
+        return Response({"detail": "ID verified successfully"}, status=200)
+
+
+class ApproveIDClaim(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, claim_id):
+        try:
+            claim = IDClaim.objects.get(id=claim_id)
+        except IDClaim.DoesNotExist:
+            return Response({"detail": "Claim not found."}, status=404)
+
+        action = request.data.get('action')  # Either 'approve' or 'reject'
+
+        if action == 'approve':
+            claim.claim_status = 'approved'
+            claim.id_found.mark_as_claimed(claim.user)
+        elif action == 'reject':
+            claim.claim_status = 'rejected'
+        else:
+            return Response({"detail": "Invalid action."}, status=400)
+
+        claim.save()
+        return Response({"detail": f"Claim {claim.claim_status}"}, status=200)
 
 
 class AdminDashBoard(views.APIView):
