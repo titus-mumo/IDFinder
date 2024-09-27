@@ -1,7 +1,7 @@
 import os
 import re
-from rest_framework import generics, status
-from rest_framework.permissions import IsAuthenticated
+from rest_framework import generics, status, views
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from django.core.files.storage import default_storage
@@ -12,6 +12,7 @@ import pytesseract
 from PIL import Image
 from django.core.files.base import ContentFile
 from django.http import JsonResponse
+from django.utils import timezone
 
 
 class IDCreateView(generics.CreateAPIView):
@@ -115,3 +116,27 @@ class MyIDListView(generics.ListAPIView):
 
     def get_queryset(self):
         return ID.objects.filter(user=self.request.user)  # Return only IDs uploaded by the logged-in user
+
+
+class AdminDashBoard(views.APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        now = timezone.now()
+        total_ids = ID.objects.count()
+        total_ids_claimed = ID.objects.filter(id_status='Claimed').count()
+        total_ids_found_this_month = ID.objects.filter(
+            created_at__year=now.year,
+            created_at__month=now.month
+        ).count()
+        total_ids_claimed_this_month = ID.objects.filter(
+            id_status = 'Claimed',
+            created_at__year=now.year,
+            created_at__month=now.month
+        ).count()
+        return Response({
+            "total_ids": total_ids,
+            "total_ids_claimed": total_ids_claimed,
+            "total_ids_found_this_month": total_ids_found_this_month,
+            "total_ids_claimed_this_month": total_ids_claimed_this_month,
+        }, status=status.HTTP_200_OK)

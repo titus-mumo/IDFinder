@@ -1,7 +1,8 @@
-import axios from "axios"
+import axios from "axios";
+import { useNavigate } from "react-router-dom"; 
+import { useSnackbar } from "../providers/SnackProvider";
 
-const base_url = process.env.BASE_URL
-
+const base_url = process.env.BASE_URL;
 
 export const refreshAccessToken = async (refreshToken) => {
     let data;
@@ -12,11 +13,14 @@ export const refreshAccessToken = async (refreshToken) => {
         }
     });
 
+    const navigate = useNavigate(); 
+
     try {
         const response = await api.post('auth/refresh-token/', { refresh: refreshToken });
-        data = response.data
+        data = response.data;
         return data;
     } catch (error) {
-        return null
+        navigate("/auth/login"); 
+        return null;
     }
 };

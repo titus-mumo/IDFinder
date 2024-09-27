@@ -64,8 +64,6 @@ export const ContactAdmin = () => {
     }
     ws.current.onmessage = (e) => {
       const data = JSON.parse(e.data);
-      data['timestamp'] = new Date();
-      data['user'] = username
       setChatMessages(prevMessages => [...prevMessages, data]);
     }
   }, [roomName])
@@ -92,25 +90,34 @@ export const ContactAdmin = () => {
   return (
     <div className='flex flex-col justify-between p-2'>
       <div>Admin</div>
-      <div className='flex flex-col justify-end self-center min-h-[600px] max-h-[600px] max-w-[700px] min-w-[500px] overflow-x-auto rounded-md border-2 border-gray-800 p-1'>
-      <div className='overflow-y-auto max-h-[550px] min-h-[500px]'>
+      <div className='flex flex-col justify-end self-center min-h-[600px] max-h-[600px] max-w-[700px] w-[400px] overflow-x-auto rounded-md border-2 border-gray-800 p-1'>
+      {/* max-h-[550px] min- */}
+      <div className='overflow-y-auto h-[500px]'>
       <div className='flex flex-col '>
       <div className='flex w-full flex-col mx-1 '>
-        {Object.keys(groupedMessages).map((date) => (
-          <div key={date} className='my-1'>
-            <div className='text-md font-medium text-center mb-0.5'>{date}</div>
-            <div className={`flex flex-col w-full`}>
-              {
-                groupedMessages[date].map((message, index) => <RenderMessage message={message} username={username} key={index}/>)
-              }
-            </div>
-            </div>
-            ))}
+        {Object.keys(groupedMessages).length === 0 ? (
+              <div className='text-center text-gray-500'>
+                No messages available.
+              </div>
+            ) : (
+              Object.keys(groupedMessages).map((date) => (
+                <div key={date} className='my-1'>
+                  <div className='text-md font-medium text-center mb-0.5'>{date}</div>
+                  <div className={`flex flex-col w-full`}>
+                    {
+                      groupedMessages[date].map((message, index) => (
+                        <RenderMessage message={message} username={username} key={index} />
+                      ))
+                    }
+                  </div>
+                </div>
+              ))
+            )}
           <div ref={messagesEndRef} />
         </div>
       </div>
       </div>
-      <form className='flex self-end w-full justify-between mt-2' onSubmit={(e) => handleSendMessage(e)}>
+      <form className={`${Object.keys(groupedMessages).length === 0? 'hidden':'flex self-end w-full justify-between mt-2'} `} onSubmit={(e) => handleSendMessage(e)}>
         <input className='basis-4/5 rounded-md shadow-md p-1 border-2 border-gray-200' placeholder='Enter message here ' value={message} onChange={(e) => setMessage(e.target.value)}></input>
         <button type='submit' className='bg-gray-900 rounded-md text-white p-1.5 px-3'>Send</button>
       </form>
@@ -120,10 +127,11 @@ export const ContactAdmin = () => {
 }
 
 const RenderMessage = ({message, username}) => {
+  
   return(
-    <div className={`my-0.5 p-1 max-w-1/2 w-1/4 flex justify-between  ${message.user.includes(username) === false? 'self-start bg-blue-600 rounded-r-md rounded-t-md': 'self-end rounded-l-md rounded-t-md bg-gray-500'}`}>
-      <p className='text-white'>{message.message}</p>
-      <p className='text-white text-xs flex text-end items-end text-right'>{moment(message.timestamp).format('h:mm a')}</p>
+    <div style={{ maxWidth: '75%' }} className={`my-0.5 p-1 flex justify-between  ${message.user.includes(username) === false? 'self-start bg-blue-600 rounded-r-md rounded-t-md': 'self-end rounded-l-md rounded-t-md bg-gray-500'}`}>
+      <p className='text-white text-left text-sm w-auto'>{message.message}</p>
+      <p className='text-white text-[10px] flex text-end items-end text-right ml-2 whitespace-nowrap'>{moment(message.timestamp).format('h:mm a')}</p>
     </div>
   )
 }

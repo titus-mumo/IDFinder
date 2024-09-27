@@ -58,10 +58,10 @@ export const ApiCall = async (endpoint, method, access, refresh, setAccess, setR
                     }
                     return refetchedData
                 } else {
-                    showSnackBar("You are not authorized to perform this function");
+                    showSnackBar("Kindly login again!");
                 }
             } catch (refreshError) {
-            
+                window.location.href = "/auth/login";
                 return
             }
         } else {
