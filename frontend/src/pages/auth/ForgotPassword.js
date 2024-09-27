@@ -1,7 +1,13 @@
 import { Typography, Input, Button } from '@mui/material'
 import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { useSnackbar } from '../../providers/SnackProvider';
+import { useAuth } from '../../providers';
+import axios from 'axios';
+
+require('dotenv').config()
+
+
 
 export const ForgotPassword = () => {
     const [email, setEmail] = useState('')
@@ -12,20 +18,40 @@ export const ForgotPassword = () => {
 
     const navigate = useNavigate()
 
+    const userAuth = useAuth()
+    const {access, setAccess, refresh, setRefresh} = userAuth
+
     const handleSendCode = (e) => {
         e.preventDefault()
-        // TODO: send code logic
-        showSnackBar('Code sent to', active === 'email' ? email : phoneNumber)
-    }
+        
+        if(active === 'email'){
+            if(email.length === 0){
+                return showSnackBar("Please enter an email!")
+            }
+            if(!email.includes('@') || !email.includes('.')){
+                return showSnackBar("Invalid email!")
+            }
+            const data = {
+                email: email,
+                base_url: window.location.origin
+            }
+            axios.post(process.env.BASE_URL + 'auth/password-reset/', data)
+            .then((response) => {
+                    if(response && response.status && response.status === 200){
+                        showSnackBar("Password reset link has been send to your email!")
+                    }else{
 
-    const handleConfirmationCode = (e) => {
-        e.preventDefault()
-
-        // TODO: confirmation code logic
-
-        setTimeout(() => {
-            navigate('/auth/reset-password')
-        }, 1000)
+                    }
+                    throw new Error(response)
+                } 
+            )
+            .catch((error) => {
+                if(error.response.status === 400){
+                    return showSnackBar("User with this email does not exist")
+                }
+                showSnackBar("Something went wrong")
+            })
+        }
     }
 
     return (
@@ -40,10 +66,10 @@ export const ForgotPassword = () => {
                 <div>
                     <p className='my-2 text-xl font-medium'>Forgot Your Password?</p>
                 </div>
-                <form onSubmit={handleConfirmationCode}>
-                    <Typography variant='body1' component='p'>Enter your email or phone number, we will send you a confirmation code</Typography>
+                <form onSubmit={handleSendCode}>
+                    <Typography variant='body1' component='p'>Enter your email, we will send you a password reset link</Typography>
                     
-                    <div className='flex justify-around mt-5'>
+                    {/* <div className='flex justify-around mt-5'>
                         <Typography 
                             variant='body1' 
                             component='p' 
@@ -62,14 +88,14 @@ export const ForgotPassword = () => {
                         >
                             Phone
                         </Typography>
-                    </div>
+                    </div> */}
                     
                     <div className='flex justify-around mt-5'>
                         {
                             active === 'email'? 
                             <Input 
                             onClick={() => setActive('email')} 
-                            className={`border-2 ${active === 'email' ? 'border-gray-800' : 'border-gray-200'} rounded-full p-1 mr-2 w-full`} 
+                            className={`border-2 ${active === 'email' ? 'border-gray-800' : 'border-gray-200'} rounded-full p-1 pr-2 w-full`} 
                             value={email} 
                             placeholder='Email' 
                             onChange={(e) => setEmail(e.target.value)} 
@@ -78,7 +104,7 @@ export const ForgotPassword = () => {
                             :
                             <Input 
                             onClick={() => setActive('phone')} 
-                            className={`border-2 ${active === 'phone' ? 'border-gray-800' : 'border-gray-200'} rounded-full p-1 mr-2 w-full`} 
+                            className={`border-2 ${active === 'phone' ? 'border-gray-800' : 'border-gray-200'} rounded-full p-1 pr-2 w-full`} 
                             value={phoneNumber} 
                             placeholder='Phone' 
                             onChange={(e) => setPhoneNumber(e.target.value)} 
@@ -86,16 +112,16 @@ export const ForgotPassword = () => {
                         />
                         }
                     </div>
-                    
-                    <Typography 
-                        className='mr-2 w-full text-end text-blue-800 text-sm' 
-                        variant='body1' 
-                        component='p' 
-                        onClick={handleSendCode}
-                        style={{ cursor: 'pointer' }} 
-                    >
-                        Send code
-                    </Typography>
+                    <div className='flex'>
+                        <Link 
+                            to='/auth/login'
+                            className='pr-2 w-full text-start text-blue-800 text-sm' 
+                            style={{ cursor: 'pointer' }} 
+                        >
+                            Go back
+                        </Link>
+                    </div>
+                
                     
                     <Button 
                         variant='contained' 
@@ -103,7 +129,7 @@ export const ForgotPassword = () => {
                         className='w-full' 
                         sx={{ borderRadius: 7, paddingY: 1.5, marginTop: 4 }}
                     >
-                        Proceed
+                        Send Code
                     </Button>
                 </form>
             </div>

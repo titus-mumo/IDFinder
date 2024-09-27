@@ -27,7 +27,7 @@ export const AuthProvider = ({ children }) => {
 
             const res = await response.json()
             if(res.access){
-                setUser({"email": refresh.email})
+                setUser({"email": res.email, "username": res.username})
                 setAccess(res.access)
                 setRefresh(res.refresh)
                 localStorage.setItem('access', res.access)
