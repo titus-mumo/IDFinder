@@ -51,11 +51,7 @@ export const AdminChats = () => {
   }, [groupedMessages]);
 
   useEffect(() => {
-    if(activeChatMessages.length === 0){
-      return
-    }else{
-      setGroupedMessages(groupMessagesByDate(activeChatMessages));
-    }
+    setGroupedMessages(groupMessagesByDate(activeChatMessages));
   }, [activeChatMessages]);
 
   useEffect(() => {
@@ -124,7 +120,7 @@ export const AdminChats = () => {
         </div>
       </div>
       </div>
-      <form className='flex self-end w-full justify-between mt-2' onSubmit={(e) => handleSendMessage(e)}>
+      <form className={`${activeRoomId.length === 0? 'hidden': 'flex self-end w-full justify-between mt-2'}`} onSubmit={(e) => handleSendMessage(e)}>
         <input className='basis-4/5 rounded-md shadow-md p-1 border-2 border-gray-200' placeholder='Enter message here ' value={message} onChange={(e) => setMessage(e.target.value)}></input>
         <button type='submit' className='bg-gray-900 rounded-md text-white p-1.5 px-3'>Send</button>
       </form>

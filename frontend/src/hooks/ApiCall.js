@@ -61,10 +61,11 @@ export const ApiCall = async (endpoint, method, access, refresh, setAccess, setR
                     showSnackBar("Kindly login again!");
                 }
             } catch (refreshError) {
-                window.location.href = "/auth/login";
+                
                 return
             }
         } else {
+            // window.location.href = "/auth/login";
             return error.response
 
         }

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Routes, Route } from "react-router-dom";
 import { LandingPage, Login, SignUp,ForgotPassword, ResetPassword } from "../pages/auth";
-import { Home, ContactAdmin, IDsIFound, Profile, Search, IDDetail, UploadID, UserClaims } from '../pages/userview';
+import { Home, ContactAdmin, IDsIFound, Profile, Search, IDDetail, UploadID, UserClaims, ClaimPage } from '../pages/userview';
 import { AdminHome, AdminChats, AdminClaims, AdminProfile, AdminSearch } from '../pages/adminview';
 import PrivateRoutes from './PrivateRoutes';
 import ProtectUserRoutes from "./ProtectUserRoutes";
@@ -28,6 +28,7 @@ export const AllRoutes = () => {
                         <Route path='/id-detail' element={<IDDetail />} />
                         <Route path='/upload-id' element={<UploadID />} />
                         <Route path='/claims' element={<UserClaims />} />
+                        <Route path='/claim-id' element={<ClaimPage />} />
                     </Route>
                 </Route>
                 <Route element={<AdminLayout />}>

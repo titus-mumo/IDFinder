@@ -140,3 +140,18 @@ class AdminDashBoard(views.APIView):
             "total_ids_found_this_month": total_ids_found_this_month,
             "total_ids_claimed_this_month": total_ids_claimed_this_month,
         }, status=status.HTTP_200_OK)
+
+class IDDetail(views.APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        id_no = request.query_params.get('id_no')
+        if not id_no:
+            return Response({"error": "ID number is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        id_detail = ID.objects.filter(id_no=id_no).first()
+        if id_detail:
+            serializer = MyIDListSerializer(id_detail)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "ID not found"}, status=status.HTTP_404_NOT_FOUND)
