@@ -16,7 +16,7 @@ class IDSerializer(serializers.ModelSerializer):
 class IDListSerializer(serializers.ModelSerializer):
     class Meta:
         model = ID
-        fields = ['id_name', 'id_no']  # Partial ID list view, only name and id_no (blurred in the view logic)
+        fields = ['primary_key','id_name', 'id_no']  # Partial ID list view, only name and id_no (blurred in the view logic)
 
 
 class MyIDListSerializer(serializers.ModelSerializer):

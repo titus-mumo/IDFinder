@@ -26,6 +26,11 @@ const useSideBarItems = [
         icon: <HomeIcon />
     },
     {
+        title: "Claims",
+        link: '/claims',
+        icon: <HomeIcon />
+    },
+    {
         title: "Contact Admin",
         link: '/contact-admin',
         icon: <ContactEmergencyIcon />

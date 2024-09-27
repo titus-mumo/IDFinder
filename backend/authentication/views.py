@@ -179,3 +179,49 @@ class CheckIfUserIsAdmin(generics.GenericAPIView):
     def get(self, request):
         user = request.user
         return JsonResponse({"staff": user.is_staff}, status = status.HTTP_200_OK)
+
+
+from .serializers import ChangePasswordSerializer, ChangeUsernameSerializer
+
+
+class ChangePasswordView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ChangePasswordSerializer
+
+    def update(self, request, *args, **kwargs):
+        user = request.user
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        # Check if the current password is correct
+        if not user.check_password(serializer.validated_data['current_password']):
+            return Response({"error": "Current password is incorrect."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Set the new password
+        user.set_password(serializer.validated_data['new_password'])
+        user.save()
+
+        return Response({"message": "Password changed successfully."}, status=status.HTTP_200_OK)
+
+
+class ChangeUsernameView(generics.UpdateAPIView):
+    serializer_class = ChangeUsernameSerializer
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        user = request.user
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            # Check if the new username already exists
+            new_username = serializer.validated_data['new_username']
+            if User.objects.filter(username=new_username).exists():
+                return Response({"error": "Username already taken."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Update the username
+            user.username = new_username
+            user.save()
+
+            return Response({"username": user.username}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

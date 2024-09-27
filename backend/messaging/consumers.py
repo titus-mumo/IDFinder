@@ -4,6 +4,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from channels.db import database_sync_to_async
 from django.contrib.auth import get_user_model
 from .models import Chats, Message
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -73,15 +74,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
             chat = await database_sync_to_async(Chats.objects.filter(room = self.room_name).first)()
             # Check if the user is allowed to send messages (either admin or non-admin in this room)
             room = await database_sync_to_async(Chats.objects.get)(room=self.room_name)
-            await database_sync_to_async(Message.objects.create)(chat=chat, message=message, user=user)
+            saved_message = await database_sync_to_async(Message.objects.create)(chat=chat, message=message, user=user)
 
+            
+            local_timestamp = timezone.localtime(saved_message.timestamp)
+
+            # Format the local time
+            formatted_timestamp = local_timestamp.strftime('%Y-%m-%d %H:%M:%S')
             # Send message to room group
             await self.channel_layer.group_send(
                 self.room_group_name,
                 {
                     'type': 'chat_message',
                     'message': message,
-                    'user': user.id,
+                    'user': user.username,
+                    'timestamp': formatted_timestamp
                 }
             )
         except Exception as e:
@@ -92,11 +99,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
             logger.info(f"Sending message to WebSocket: {event['message']}")
             message = event['message']
             user = event['user']
+            timestamp = event['timestamp']
 
             # Send message to WebSocket
             await self.send(text_data=json.dumps({
                 'message': message,
-                'user': user
+                'user': user,
+                'timestamp': timestamp
             }))
         except Exception as e:
             logger.error(f"Error in chat_message: {e}")

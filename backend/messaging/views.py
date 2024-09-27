@@ -22,6 +22,15 @@ class ViewChats(generics.ListAPIView):
         chat = Chats.objects.filter(user = self.request.user).first()
         return Message.objects.filter(chat=chat).order_by('timestamp')
 
+class ViewActiveChatMessages(generics.ListAPIView):
+    permission_classes = [IsAdminUser]
+    serializer_class = MessageSerializer
+
+    def get_queryset(self):
+        chat_id = self.request.query_params.get('chat_id')
+        print(chat_id)
+        chat = Chats.objects.filter(chat_id = chat_id).first()
+        return Message.objects.filter(chat = chat).order_by('timestamp')
 
 class AdminViewChats(generics.ListAPIView):
     permission_classes = [IsAdminUser]
@@ -35,6 +44,8 @@ class AdminViewChats(generics.ListAPIView):
         chats = Chats.objects.annotate(latest_message=Subquery(latest_message))
         return chats
         
+
+
 
 
 

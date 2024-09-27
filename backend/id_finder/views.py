@@ -1,7 +1,7 @@
 import os
 import re
 from rest_framework.views import APIView
-from rest_framework import generics, status
+from rest_framework import generics, status, views
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
@@ -14,6 +14,8 @@ from PIL import Image
 from django.core.files.base import ContentFile
 from django.http import JsonResponse
 from .image_matcher import ImageMatcher
+from django.utils import timezone
+
 
 class IDCreateView(generics.CreateAPIView):
     queryset = ID.objects.all()
@@ -176,3 +178,42 @@ class ApproveIDClaim(APIView):
 
         claim.save()
         return Response({"detail": f"Claim {claim.claim_status}"}, status=200)
+
+
+class AdminDashBoard(views.APIView):
+    permission_classes = [IsAdminUser]
+
+    def get(self, request):
+        now = timezone.now()
+        total_ids = ID.objects.count()
+        total_ids_claimed = ID.objects.filter(id_status='Claimed').count()
+        total_ids_found_this_month = ID.objects.filter(
+            created_at__year=now.year,
+            created_at__month=now.month
+        ).count()
+        total_ids_claimed_this_month = ID.objects.filter(
+            id_status = 'Claimed',
+            created_at__year=now.year,
+            created_at__month=now.month
+        ).count()
+        return Response({
+            "total_ids": total_ids,
+            "total_ids_claimed": total_ids_claimed,
+            "total_ids_found_this_month": total_ids_found_this_month,
+            "total_ids_claimed_this_month": total_ids_claimed_this_month,
+        }, status=status.HTTP_200_OK)
+
+class IDDetail(views.APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        id_no = request.query_params.get('id_no')
+        if not id_no:
+            return Response({"error": "ID number is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        id_detail = ID.objects.filter(id_no=id_no).first()
+        if id_detail:
+            serializer = MyIDListSerializer(id_detail)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "ID not found"}, status=status.HTTP_404_NOT_FOUND)

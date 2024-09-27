@@ -20,24 +20,23 @@ export const CountCard = ({ name, count }) => {
     <div
       className={`${bgColor} rounded-lg p-5 m-3 shadow-lg hover:shadow-2xl transition-shadow duration-300`}
       style={{
-        width: 'auto', // Responsive width
-        maxWidth: '250px',
+        width: '200px',
         height: 'auto', // Adjust height dynamically
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
       }}
     >
-      <div className='flex items-center justify-between'>
+      <div className='flex items-center justify-between flex-col lg:flex-row'>
         <p
           className={`text-sm text-white font-medium flex items-center
             md:text-base  // Medium screens
             lg:text-xl`} // Large screens
         >
-          <FaCheckCircle className={`mr-2 md:text-base lg:text-xl`} /> {/* Icon size changes */}
+          <FaCheckCircle className={`mr-1 md:text-base lg:text-xl`} /> {/* Icon size changes */}
           {name}
         </p>
-        <span className='text-sm text-gray-200'>
+        <span className='text-xs text-gray-200'>
           {minutesAgo === 0 ? 'Updated now' : `Updated ${minutesAgo} minute(s) ago`}
         </span>
       </div>
