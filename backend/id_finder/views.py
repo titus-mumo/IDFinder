@@ -138,6 +138,8 @@ An admin can then approve or reject the user's verification claim through the Ap
         district_of_birth = request.data.get('district_of_birth')
         user_image = request.FILES.get('selfie')
 
+    
+
         # Match the ID name, date of birth, and district
         if id_name != id_record.id_name:
             return Response({"detail": "ID Name does not match"}, status=400) 
@@ -178,6 +180,7 @@ class ApproveIDClaim(APIView):
 
         claim.save()
         return Response({"detail": f"Claim {claim.claim_status}"}, status=200)
+
 
 
 class AdminDashBoard(views.APIView):

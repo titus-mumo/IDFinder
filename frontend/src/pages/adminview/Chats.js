@@ -5,8 +5,7 @@ import { useAuth } from '../../providers'
 import moment from 'moment'
 
 export const AdminChats = () => {
-  const [activeRoomName, setActiveRoomName] = useState('')
-  const [activeRoomId, setActiveRoomId] = useState('')
+  const [activeRoomId, setActiveRoomId] = useState(undefined)
   const [activeChatMessages, setActiveChatMessages] = useState({})
   const [groupedMessages, setGroupedMessages] = useState({})
   const [chats, setChats] = useState({})
@@ -21,13 +20,13 @@ export const AdminChats = () => {
   const ws = useRef(null)
 
   useEffect(() => {
-    if(activeRoomName.length === 0){
+    if(activeRoomId === undefined){
       return
     }
     if(ws.current){
       ws.current.close()
     }
-    ws.current = new WebSocket(`ws://localhost:8000/ws/messaging/${activeRoomName}/`)
+    ws.current = new WebSocket(`ws://localhost:8000/ws/messaging/${activeRoomId}/`)
     ws.current.onerror = (error) => {
     }
 
@@ -36,7 +35,7 @@ export const AdminChats = () => {
       setActiveChatMessages(prevMessages => [...prevMessages, data]);
       scrollToBottom()
     }
-  }, [activeRoomName])
+  }, [activeRoomId])
 
 
 
@@ -58,7 +57,8 @@ export const AdminChats = () => {
     ApiCall('/messaging/admin/view-chats/', 'get', access, refresh, setAccess, setRefresh, {}, {}, {}, showSnackBar)
     .then((response) => {
       if(response && response.status !== undefined && response.status === 200){
-        setUsername(response.data[0].room.split('_')[0])
+        // setUsername(response.data)
+        console.log(response)
         return setChats(response.data)
       }
       throw new Error(response)
@@ -66,10 +66,23 @@ export const AdminChats = () => {
     .catch((error) => {
       showSnackBar("An error occured")
     })
+    ApiCall('/messaging/admin/fetch-username/', 'get', access, refresh, setAccess, setRefresh, {}, {}, {}, showSnackBar)
+    .then((response) => {
+      if(response && response.status !== undefined && response.status === 200){
+        console.log(response)
+        setUsername(response.data.username)
+        return
+      }
+      throw new Error(response)
+    })
+    .catch((error) => {
+      showSnackBar("An error occured")
+    })
+
   }, [])
 
   useEffect(() => {
-    if(activeRoomId !== ''){
+    if(activeRoomId !== undefined){
       ApiCall(`messaging/view-active-chat-messages/?chat_id=${activeRoomId}`, 'get', access, refresh, setAccess, setRefresh, {}, {}, {}, showSnackBar)
       .then((response) => {
         if(response && response.status && response.status === 200){
@@ -98,7 +111,7 @@ export const AdminChats = () => {
     <div className='flex self-center'>
       <div className='self-start mr-2 lg:w-[200px]'>
         {
-          chats.length > 0? chats.map((chat, index) => <ShowChat key={index} chat={chat} setActiveRoomId={setActiveRoomId} activeRoomId={activeRoomId} setActiveRoomName={setActiveRoomName}/>): 'Chats will display here'
+          chats.length > 0? chats.map((chat, index) => <ShowChat key={index} chat={chat} setActiveRoomId={setActiveRoomId} activeRoomId={activeRoomId}/>): 'Chats will display here'
         }
       </div>
       <div className='flex flex-col justify-end self-center min-h-[600px] max-h-[600px] max-w-[700px] w-[400px] overflow-x-auto rounded-md border-2 border-gray-800 p-1'>
@@ -120,7 +133,7 @@ export const AdminChats = () => {
         </div>
       </div>
       </div>
-      <form className={`${activeRoomId.length === 0? 'hidden': 'flex self-end w-full justify-between mt-2'}`} onSubmit={(e) => handleSendMessage(e)}>
+      <form className={`${activeRoomId === undefined? 'hidden': 'flex self-end w-full justify-between mt-2'}`} onSubmit={(e) => handleSendMessage(e)}>
         <input className='basis-4/5 rounded-md shadow-md p-1 border-2 border-gray-200' placeholder='Enter message here ' value={message} onChange={(e) => setMessage(e.target.value)}></input>
         <button type='submit' className='bg-gray-900 rounded-md text-white p-1.5 px-3'>Send</button>
       </form>
@@ -133,15 +146,14 @@ export const AdminChats = () => {
   )
 }
 
-const ShowChat = ({chat, setActiveRoomId, activeRoomId, setActiveRoomName}) => {
+const ShowChat = ({chat, setActiveRoomId, activeRoomId}) => {
   const handleJoinRoom = (e) => {
     e.preventDefault()
     setActiveRoomId(chat.chat_id)
-    setActiveRoomName(chat.room)
   }
   return(
     <div className={`p-2 rounded-md hover:cursor-pointer w-full ${activeRoomId === chat.chat_id? 'bg-gray-400': 'hover:bg-gray-200'}`} onClick={(e) => handleJoinRoom(e)}>
-      <p className='text-left'>{chat.room_name}</p>
+      <p className='text-left'>{chat.user}</p>
       <p className='text-left text-xs'>{chat.latest_message}</p>
     </div>
   )
@@ -180,7 +192,7 @@ const groupMessagesByDate = (messages) => {
 const RenderMessage = ({message, username}) => {
   
   return(
-    <div style={{ maxWidth: '75%' }} className={`my-0.5 p-1 flex justify-between  ${message.user.includes(username) === false? 'self-start bg-blue-600 rounded-r-md rounded-t-md': 'self-end rounded-l-md rounded-t-md bg-gray-500'}`}>
+    <div style={{ maxWidth: '75%' }} className={`my-0.5 p-1 flex justify-between  ${message.user !== username? 'self-start bg-blue-600 rounded-r-md rounded-t-md': 'self-end rounded-l-md rounded-t-md bg-gray-500'}`}>
       <p className='text-white text-left text-sm w-auto'>{message.message}</p>
       <p className='text-white text-[10px] flex text-end items-end text-right ml-2 whitespace-nowrap'>{moment(message.timestamp).format('h:mm a')}</p>
     </div>

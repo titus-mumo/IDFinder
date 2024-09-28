@@ -20,6 +20,8 @@ from .serializers import (
     VerifyCodeSerializer
 )
 
+from messaging.models import Chats
+
 from django.http import JsonResponse
 
 User = get_user_model()
@@ -33,6 +35,14 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
+
+            chat = Chats.objects.create()
+            chat.users.add(user)
+            admins = User.objects.filter(is_staff = True)
+
+            for admin in admins:
+                chat.users.add(admin)
+
             return Response({
                 'user': {
                     'email': user.email,

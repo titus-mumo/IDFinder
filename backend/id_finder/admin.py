@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ID
+from .models import ID, IDClaim
 from django.contrib.auth import get_user_model
 from django.utils.html import format_html
 
@@ -51,3 +51,8 @@ class CustomUserAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return queryset
         return queryset.filter(id=request.user.id)
+    
+@admin.register(IDClaim)
+class ClaimAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in IDClaim._meta.fields]
+

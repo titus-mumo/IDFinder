@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../providers';
 import { Input, Button } from "@mui/material";
 import { useSnackbar } from '../../providers/SnackProvider';
+import { ApiCall } from '../../hooks';
 
 export const ClaimPage = () => {
   const location = useLocation();
@@ -32,11 +33,21 @@ export const ClaimPage = () => {
     }
 
     const formData = new FormData();
-    formData.append("id_no", IDNo);
     formData.append("id_name", IDName);
     formData.append("district_of_birth", districtOfBirth);
     formData.append("date_of_birth", dateOfBirth);
     formData.append("selfie", selfie);
+
+    ApiCall(`api/verify/${IDNo}/`, 'post', access, refresh, setAccess, setRefresh, formData, {}, true, showSnackBar)
+    .then((response) => {
+      if(response && response.status !== undefined && response.status === 200){
+        return showSnackBar("Claim is valid")
+      }
+      throw new Error(response)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
 
     navigate('/claims');
   };

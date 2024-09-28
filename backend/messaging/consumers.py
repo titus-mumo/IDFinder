@@ -12,54 +12,33 @@ logger = logging.getLogger(__name__)
 
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self):
-        self.room_name = self.scope['url_route']['kwargs']['room_name']
-        print(self.room_name)
-        
-        # Extract usernames from the room name (expected format: admin_user)
-        room_parts = self.room_name.split('_')
-        print(room_parts)
-        if len(room_parts) != 2:
-            await self.close()  # Invalid room format
-            return
+        self.chat_id = self.scope['url_route']['kwargs']['chat_id']
 
-        # Determine if it's a valid room between an admin and a user
-        admin_username, user_username = room_parts
         try:
-            admin_user = await database_sync_to_async(User.objects.get)(username=admin_username, is_staff=True)
-            other_user = await database_sync_to_async(User.objects.get)(username=user_username, is_staff=False)
-        except User.DoesNotExist:
-            await self.close()  # Invalid users
+            chat = await database_sync_to_async(Chats.objects.get)(chat_id=self.chat_id)
+        except Chats.DoesNotExist:
+            await self.close()  # Invalid chat
             return
-        
-        if not other_user.is_authenticated:
-            await self.close()  # Close the connection if not authenticated
-            return
-
-        # Set the room group name
-        self.room_group_name = f'chat_{self.room_name}'
-        logger.info(f"Connecting to room: {self.room_name}")
-        logger.info(f"Group name: {self.room_group_name}")
 
         # Join room group
         await self.channel_layer.group_add(
-            self.room_group_name,
+            self.chat_id,
             self.channel_name
         )
 
         await self.accept()
 
     async def disconnect(self, close_code):
-        if self.room_group_name:
+        if self.chat_id:
             logger.info(f"Disconnecting from room: {self.room_name}")
             # Leave room group
             await self.channel_layer.group_discard(
-                self.room_group_name,
+                self.chat_id,
                 self.channel_name
             )
 
     async def receive(self, text_data):
         print(text_data)
-        print(self.room_name)
         logger.info(f"Received message: {text_data}")
         try:
             text_data_json = json.loads(text_data)
@@ -71,9 +50,8 @@ class ChatConsumer(AsyncWebsocketConsumer):
             if user is None:
                 logger.error(f"User with username {username} does not exist")
             print(user.username)
-            chat = await database_sync_to_async(Chats.objects.filter(room = self.room_name).first)()
+            chat = await database_sync_to_async(Chats.objects.filter(chat_id = self.chat_id, users = user).first)()
             # Check if the user is allowed to send messages (either admin or non-admin in this room)
-            room = await database_sync_to_async(Chats.objects.get)(room=self.room_name)
             saved_message = await database_sync_to_async(Message.objects.create)(chat=chat, message=message, user=user)
 
             
@@ -83,7 +61,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
             formatted_timestamp = local_timestamp.strftime('%Y-%m-%d %H:%M:%S')
             # Send message to room group
             await self.channel_layer.group_send(
-                self.room_group_name,
+                self.chat_id,
                 {
                     'type': 'chat_message',
                     'message': message,

@@ -26,4 +26,4 @@ class MyIDListSerializer(serializers.ModelSerializer):
 class IDClaimSerializer(serializers.ModelSerializer):
     class Meta:
         model = IDClaim
-        fields = ['id_found', 'user', 'claim_status', 'created_at']
+        fields = '__all__'

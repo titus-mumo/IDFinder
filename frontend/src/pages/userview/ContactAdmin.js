@@ -11,7 +11,7 @@ export const ContactAdmin = () => {
   const {access, refresh, setAccess, setRefresh} = userAuth
   const [chatMessages, setChatMessages] = useState({})
   const [message, setMessage] = useState('')
-  const [roomName, setRoomName] = useState('')
+  const [chatID, setChatID] = useState(undefined)
   const [username, setUsername] = useState('')
   const [groupedMessages, setGroupedMessages] = useState({})
   const ws = useRef(null)
@@ -41,8 +41,8 @@ export const ContactAdmin = () => {
     ApiCall('messaging/fetch_chat_room_name/', 'get', access, refresh, setAccess, setRefresh, {}, {}, {}, showSnackBar)
     .then((response) => {
       if(response && response.status !== undefined && response.status === 200){
-        setRoomName(response.data.room_name)
-        setUsername(response.data.user)
+        setChatID(response.data.chat_id)
+        setUsername(response.data.username)
 
       }
     })
@@ -52,13 +52,13 @@ export const ContactAdmin = () => {
 
   }, [])
   useEffect(() => {
-    if(roomName.length === 0){
+    if(chatID === undefined){
       return
     }
     if(ws.current){
       ws.current.close()
     }
-    ws.current = new WebSocket(`ws://localhost:8000/ws/messaging/${roomName}/`)
+    ws.current = new WebSocket(`ws://localhost:8000/ws/messaging/${chatID}/`)
     ws.current.onerror = (error) => {
       setChatMessages([])
     }
@@ -66,7 +66,7 @@ export const ContactAdmin = () => {
       const data = JSON.parse(e.data);
       setChatMessages(prevMessages => [...prevMessages, data]);
     }
-  }, [roomName])
+  }, [chatID])
 
 
 
@@ -129,7 +129,7 @@ export const ContactAdmin = () => {
 const RenderMessage = ({message, username}) => {
   
   return(
-    <div style={{ maxWidth: '75%' }} className={`my-0.5 p-1 flex justify-between  ${message.user.includes(username) === false? 'self-start bg-blue-600 rounded-r-md rounded-t-md': 'self-end rounded-l-md rounded-t-md bg-gray-500'}`}>
+    <div style={{ maxWidth: '75%' }} className={`my-0.5 p-1 flex justify-between  ${message.user !== username? 'self-start bg-blue-600 rounded-r-md rounded-t-md': 'self-end rounded-l-md rounded-t-md bg-gray-500'}`}>
       <p className='text-white text-left text-sm w-auto'>{message.message}</p>
       <p className='text-white text-[10px] flex text-end items-end text-right ml-2 whitespace-nowrap'>{moment(message.timestamp).format('h:mm a')}</p>
     </div>
