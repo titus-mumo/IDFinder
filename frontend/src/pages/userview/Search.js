@@ -55,27 +55,25 @@ export const Search = () => {
 
 
   return (
-    <div className='flex justify-center flex-col'>
-      <form>
-        <div>
+    <div className='flex justify-center flex-col w-full'>
+      <form
+        className="self-center max-w-md flex flex-col justify-start bg-white px-2 w-full"
+      >
         <Input
-                className="my-3 border-2 border-gray-200 px-1 md:px-1.5 rounded-full w-full text-xs md:text-sm max-w-md"
+                className="my-2 border-2 border-gray-300 p-1 rounded-md w-full text-xs md:text-sm"
                 type="text"
                 placeholder="Enter id no. "
                 value={searchQuery}
                 onChange={(e) => handleSearchQuery(e.target.value)}
                 disableUnderline
-                endAdornment={
+                startAdornment={
                     <InputAdornment position="start">
                     <SearchIcon />
                     </InputAdornment>
                 }
                 />
-        </div>
       </form>
-
       <FilteredContainer filteredIDs={filteredIDs}/>
-
     </div>
   )
 }

@@ -23,7 +23,14 @@ class MyIDListSerializer(serializers.ModelSerializer):
     class Meta:
         model = ID
         fields = "__all__"
+
+        
 class IDClaimSerializer(serializers.ModelSerializer):
     class Meta:
         model = IDClaim
         fields = '__all__'
+
+class ViewUserClaimSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IDClaim
+        fields = ["claim_status", "date_of_birth", "district_of_birth", "id_name", "id_no", "selfie", "created_at"]

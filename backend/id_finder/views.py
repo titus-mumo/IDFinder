@@ -118,46 +118,51 @@ class MyIDListView(generics.ListAPIView):
 
     def get_queryset(self):
         return ID.objects.filter(user=self.request.user)  # Return only IDs uploaded by the logged-in user
-class VerifyIDView(APIView):
+
+
+
     """ user submits a POST request to VerifyIDView with their ID number, personal details, and a selfie image.
 The view verifies the provided information against the retrieved ID record and performs facial recognition using the ImageMatcher class.
 If all checks pass, a success response is returned.
 An admin can then approve or reject the user's verification claim through the ApproveIDClaim view. The claim status is updated accordingly, and relevant actions (e.g., marking the ID as claimed) are taken."""
 
+
+class IDClaimView(generics.CreateAPIView):
+    queryset = IDClaim.objects.all()
     permission_classes = [IsAuthenticated]
+    serializer_class = IDClaimSerializer
 
-    def post(self, request, id_no):
-        try:
-            id_record = ID.objects.get(id_no=id_no)
-        except ID.DoesNotExist:
-            return Response({"detail": "ID not found."}, status=404)
+    def post(self, serializer):
+        data = self.request.data
+        primary_key = self.request.query_params.get('id_no')
+        data["id_found"] = ID.objects.filter(primary_key = primary_key).first().primary_key
+        data["user"] = self.request.user.id
+        serializer = self.get_serializer(data = data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Claim submitted successfully"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"error": serializer.errors}, status = status.HTTP_400_BAD_REQUEST)
 
-        # Get user-provided details
-        id_name = request.data.get('id_name')
-        date_of_birth = request.data.get('date_of_birth')
-        district_of_birth = request.data.get('district_of_birth')
-        user_image = request.FILES.get('selfie')
 
-    
-
-        # Match the ID name, date of birth, and district
-        if id_name != id_record.id_name:
-            return Response({"detail": "ID Name does not match"}, status=400) 
-        if date_of_birth != str(id_record.date_of_birth):
-            return Response({"detail": "Date of Birth does not match"}, status=400)
-        if district_of_birth != id_record.district_of_birth:
-            return Response({"detail": "District does not match"}, status=400)
-
-        # Image matching logic
-        if user_image:
-            matcher = ImageMatcher()
-            match_score = matcher.compare_faces(user_image.path, id_record.front_image.path)
-            if match_score < 80:
-                return Response({"detail": "Face not matched", "match_score": match_score}, status=400)
+        # # Image matching logic
+        # if user_image:
+        #     matcher = ImageMatcher()
+        #     match_score = matcher.compare_faces(user_image.path, id_record.front_image.path)
+        #     if match_score < 80:
+        #         return Response({"detail": "Face not matched", "match_score": match_score}, status=400)
 
         # All details match
-        return Response({"detail": "ID verified successfully"}, status=200)
 
+from .serializers import ViewUserClaimSerializer
+
+class UserClaimsView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ViewUserClaimSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return IDClaim.objects.filter(user = user)
 
 class ApproveIDClaim(APIView):
     permission_classes = [IsAdminUser]

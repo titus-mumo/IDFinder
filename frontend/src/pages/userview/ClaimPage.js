@@ -8,6 +8,7 @@ import { ApiCall } from '../../hooks';
 export const ClaimPage = () => {
   const location = useLocation();
   const { primary_key } = location.state || {};
+  const pk = parseInt(primary_key)
   const showSnackBar = useSnackbar();
   const userAuth = useAuth();
   const { access, refresh, setAccess, setRefresh } = userAuth;
@@ -33,15 +34,16 @@ export const ClaimPage = () => {
     }
 
     const formData = new FormData();
+    formData.append("id_no", IDNo);
     formData.append("id_name", IDName);
     formData.append("district_of_birth", districtOfBirth);
     formData.append("date_of_birth", dateOfBirth);
     formData.append("selfie", selfie);
 
-    ApiCall(`api/verify/${IDNo}/`, 'post', access, refresh, setAccess, setRefresh, formData, {}, true, showSnackBar)
+    ApiCall(`api/verify/?id_no=${pk}`, 'post', access, refresh, setAccess, setRefresh, formData, {}, true, showSnackBar)
     .then((response) => {
-      if(response && response.status !== undefined && response.status === 200){
-        return showSnackBar("Claim is valid")
+      if(response && response.status !== undefined && response.status === 201){
+        return showSnackBar("Claim submitted successfully")
       }
       throw new Error(response)
     })
