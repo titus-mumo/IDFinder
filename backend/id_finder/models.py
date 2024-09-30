@@ -8,7 +8,7 @@ def id_image_upload_path(instance, filename):
     return f'id_images/{instance.id_no}/{filename}'
 
 class ID(models.Model):
-    primary_key = models.AutoField(unique = True, primary_key=True, default=1)
+    primary_key = models.AutoField(unique = True, primary_key=True)
     created_at = models.DateTimeField(default=timezone.now)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ids_found')
     id_name = models.CharField(max_length=255)
@@ -50,6 +50,7 @@ class IDClaim(models.Model):
     district_of_birth = models.CharField(max_length=30, default='Nairobi')
     date_of_birth = models.DateTimeField(default=datetime.now())
     selfie = models.FileField(upload_to='selfie/', default='selfie/default.jpg')
+    image_match = models.CharField(max_length=100, default='70')
 
     def __str__(self):
         return f"{self.user} claims {self.id_found.id_no}"

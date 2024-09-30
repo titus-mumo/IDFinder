@@ -3,9 +3,11 @@ import { useSnackbar } from '../../providers/SnackProvider'
 import { ApiCall } from '../../hooks'
 import { useAuth } from '../../providers'
 import moment from 'moment'
+import { useLocation } from 'react-router-dom'
 
 export const AdminChats = () => {
-  const [activeRoomId, setActiveRoomId] = useState(undefined)
+  const location  = useLocation()
+  const [activeRoomId, setActiveRoomId] = useState(location.state?.chat_id || null)
   const [activeChatMessages, setActiveChatMessages] = useState({})
   const [groupedMessages, setGroupedMessages] = useState({})
   const [chats, setChats] = useState({})

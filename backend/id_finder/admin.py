@@ -7,7 +7,7 @@ CustomUser = get_user_model()
 
 @admin.register(ID)
 class IDAdmin(admin.ModelAdmin):
-    list_display = ('id_name', 'id_no', 'date_of_birth', 'gender', 'district_of_birth', 'date_of_issue', 'id_status', 'user', 'id_image_tag')
+    list_display = ('id_name', 'id_no', 'date_of_birth', 'gender', 'district_of_birth', 'date_of_issue', 'id_status', 'user', 'front_image', 'back_image', 'id_image_tag')
     list_filter = ('gender', 'district_of_birth', 'id_status', 'date_of_issue')
     search_fields = ('id_name', 'id_no', 'sn', 'district_of_birth')
     readonly_fields = ('id_image_tag',)

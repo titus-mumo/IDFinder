@@ -41,7 +41,7 @@ export const UserClaims = () => {
             {expandedClaimId ? (
                 // Render only the expanded claim if one is selected
                 <DisplayClaim 
-                    claim={claims.find(claim => claim.id_no === expandedClaimId)} 
+                    claim={claims.find(claim => claim.id === expandedClaimId)} 
                     onViewLess={handleViewLess} 
                 />
             ) : (
@@ -127,7 +127,7 @@ const getStatusColor = (status) => {
 };
 
 const ClaimOverview = ({ claim, onViewMore }) => {
-    const { id_no, id_name, claim_status } = claim;
+    const { id, id_no, id_name, claim_status } = claim;
 
     return (
         <div className="max-w-md mx-auto bg-white border border-gray-200 rounded-lg shadow-md p-4 flex flex-col space-y-2 m-2">
@@ -147,7 +147,7 @@ const ClaimOverview = ({ claim, onViewMore }) => {
                 variant="contained"
                 className="w-full text-xs md:text-sm mt-4"
                 sx={{ borderRadius: 2 }}
-                onClick={() => onViewMore(id_no)} // Set the ID of the claim to view more
+                onClick={() => onViewMore(id)} // Set the ID of the claim to view more
             >
                 View More
             </Button>

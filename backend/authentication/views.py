@@ -20,6 +20,8 @@ from .serializers import (
     VerifyCodeSerializer
 )
 
+from rest_framework import views
+
 from messaging.models import Chats
 
 from django.http import JsonResponse
@@ -235,3 +237,15 @@ class ChangeUsernameView(generics.UpdateAPIView):
             return Response({"username": user.username}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+from .serializers import ViewUserDetailsSerializer
+
+class UserDetailsView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ViewUserDetailsSerializer
+
+    def get_object(self):
+        user = self.request.user
+        return user
+
+

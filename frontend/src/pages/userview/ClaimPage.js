@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../providers';
 import { Input, Button } from "@mui/material";
@@ -51,7 +51,7 @@ export const ClaimPage = () => {
       console.log(error)
     })
 
-    navigate('/claims');
+    // navigate('/claims');
   };
 
   const handleEnterSelfie = (e) => {

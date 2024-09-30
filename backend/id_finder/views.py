@@ -15,7 +15,7 @@ from django.core.files.base import ContentFile
 from django.http import JsonResponse
 from .image_matcher import ImageMatcher
 from django.utils import timezone
-
+import uuid
 
 class IDCreateView(generics.CreateAPIView):
     queryset = ID.objects.all()
@@ -135,8 +135,23 @@ class IDClaimView(generics.CreateAPIView):
     def post(self, serializer):
         data = self.request.data
         primary_key = self.request.query_params.get('id_no')
-        data["id_found"] = ID.objects.filter(primary_key = primary_key).first().primary_key
+        id_record = ID.objects.filter(primary_key = primary_key).first()
+        data["id_found"] = id_record.primary_key
         data["user"] = self.request.user.id
+        user_image = self.request.FILES.get('selfie')
+        if user_image:
+            temp_filename = f'temp_{uuid.uuid4()}.jpg'
+            
+            # Save the user image temporarily in the MEDIA_ROOT directory
+            temp_file_path = default_storage.save(os.path.join('temp', temp_filename), ContentFile(user_image.read()))
+
+            # Get the absolute path for the temp file
+            temp_file_full_path = os.path.join(settings.MEDIA_ROOT, temp_file_path)
+            matcher = ImageMatcher()
+            match_score = matcher.compare_faces(temp_file_full_path, id_record.front_image.path)
+            default_storage.delete(temp_file_full_path)
+        data['image_match'] = match_score
+
         serializer = self.get_serializer(data = data)
         if serializer.is_valid():
             serializer.save()
@@ -144,15 +159,6 @@ class IDClaimView(generics.CreateAPIView):
         else:
             return Response({"error": serializer.errors}, status = status.HTTP_400_BAD_REQUEST)
 
-
-        # # Image matching logic
-        # if user_image:
-        #     matcher = ImageMatcher()
-        #     match_score = matcher.compare_faces(user_image.path, id_record.front_image.path)
-        #     if match_score < 80:
-        #         return Response({"detail": "Face not matched", "match_score": match_score}, status=400)
-
-        # All details match
 
 from .serializers import ViewUserClaimSerializer
 
@@ -225,3 +231,31 @@ class IDDetail(views.APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({"error": "ID not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class AdminIDClaimView(generics.ListAPIView):
+    permission_classes = [IsAdminUser]
+    serializer_class = ViewUserClaimSerializer
+    
+    def get_queryset(self):
+        return IDClaim.objects.all()
+
+
+from .serializers import ViewIDInClaimSerializer
+
+class ClaimIDDetail(views.APIView):
+    permission_classes = [IsAdminUser]
+    
+    def get(self, request):
+        id_no = request.query_params.get('id_no')
+        if not id_no:
+            return Response({"error": "ID number is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        id_detail = ID.objects.filter(id_no=id_no).first()
+        if id_detail:
+            serializer = ViewIDInClaimSerializer(id_detail)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "ID not found"}, status=status.HTTP_404_NOT_FOUND)
+
+

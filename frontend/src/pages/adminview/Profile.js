@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ApiCall } from '../../hooks';
 import { useAuth } from '../../providers';
 import { useSnackbar } from '../../providers/SnackProvider';
@@ -9,17 +9,36 @@ import IconButton from '@mui/material/IconButton';
 
 
 export const AdminProfile = () => {
-  const user = JSON.parse(localStorage.getItem('user'));
-  const { email, phone_number, username } = user;
+  const [email, setEmail] = useState('')
+  const [username, setUsername] = useState('')
+  const [phone_number, setPhoneNumber] = useState()
 
   const showSnackBar = useSnackbar()
 
   const userAuth = useAuth();
   const { access, refresh, setAccess, setRefresh, logOut } = userAuth;
+  const [newUsername, setNewUsername] = useState('');
+  useEffect(() => {
+    ApiCall('auth/user/details', 'get', access, refresh, setAccess, setRefresh, {}, {}, false, showSnackBar)
+    .then((response) => {
+      if(response.status !== undefined && response.status === 200){
+        console.log(response)
+        setEmail(response.data.email)
+        setPhoneNumber(response.data.phone_number)
+        setUsername(response.data.username)
+        setNewUsername(response.data.username)
+        return
+      }
+      throw new Error(response)
+    })
+    .catch((error) => {
+      showSnackBar("An error occured")
+    })
+  }, [])
 
   const [isEditingUsername, setEditingUsername] = useState(false);
   const [isEditingPassword, setEditingPassword] = useState(false);
-  const [newUsername, setNewUsername] = useState(username);
+  
   const [oldPassword, setOldPassword] = useState('')
   const [newPassword, setNewPassword] = useState('');
   const [confirmNewPassword, setConfirmNewPassword] = useState('')
@@ -69,6 +88,10 @@ export const AdminProfile = () => {
     })
     .finally(() => {
       setEditingUsername(false);
+      setTimeout(() => {
+        window.location.reload()
+      }, 2000)
+      
     })
   };
 

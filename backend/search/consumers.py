@@ -19,10 +19,10 @@ class SearchConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def filter_ids(self, search_query):
         if search_query:
-            ids = list(ID.objects.filter(id_no__startswith=search_query).values_list('id_name', 'id_no'))
+            ids = list(ID.objects.filter(id_no__startswith=search_query).values_list('primary_key','id_name', 'id_no'))
             modified_ids = [
-                {"id_name": id_name.split()[0], "id_no": id_no[:4]}  # Take first word of name and 4 digits of number
-                for id_name, id_no in ids
+                {"primary_key": primary_key,"id_name": id_name.split()[0], "id_no": id_no[:4]}  # Take first word of name and 4 digits of number
+                for primary_key, id_name, id_no in ids
             ]
             return modified_ids
         return []
