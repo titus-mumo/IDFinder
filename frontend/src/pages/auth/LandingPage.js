@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import placeholder from '../../assets/images/placeholder.png';
 import MenuIcon from '@mui/icons-material/Menu';
@@ -14,17 +14,32 @@ const Header = () => {
         setHideMenu((prevCheck) => !prevCheck);
     };
 
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        const handleScroll = () => {
+          setHideMenu(true);  // Hide the menu when scrolling
+        };
+    
+        window.addEventListener('scroll', handleScroll);
+    
+        // Clean up event listener on component unmount
+        return () => {
+          window.removeEventListener('scroll', handleScroll);
+        };
+      }, []);
+
     return (
         <div className="bg-gray-900 p-4 shadow-md rounded-b-lg">
             <div className='flex justify-between items-center'>
                 <p className='text-white text-2xl font-bold'>ID Finder</p>
                 <div className='items-center hidden md:flex space-x-6'>
                     <Link className='text-white hover:underline' to='/'>Home</Link>
-                    <Link className='text-white hover:underline' to='/about'>About Us</Link>
+                    <Link className='text-white hover:underline' to='/#'>About Us</Link>
                     <Link className='text-white hover:underline' to='/how-it-works'>How It Works</Link>
-                    <Link className='text-white hover:underline' to='/benefits'>Benefits</Link>
+                    <Link className='text-white hover:underline' to='/#'>Benefits</Link>
                     <Link className='text-white hover:underline' to='/auth/login'>Login</Link>
-                    <Button variant="contained" color="primary">Get Started</Button>
+                    <Button variant="contained" color="primary" onClick={() => navigate('/auth/register')}>Get Started</Button>
                 </div>
                 <div className='md:hidden'>
                     <MenuIcon className='text-white hover:cursor-pointer' onClick={handleHideMenu} />
@@ -34,9 +49,9 @@ const Header = () => {
             {/* Mobile Menu */}
             <div className={`${hideMenu ? 'hidden' : 'flex'} fixed z-50 top-16 left-4 right-4 bg-white shadow-md rounded-md p-4 md:hidden flex-col space-y-4`}>
                 <Link to='/' className='hover:text-indigo-700'>Home</Link>
-                <Link to='/about' className='hover:text-indigo-700'>About Us</Link>
-                <Link to='/how-it-works' className='hover:text-indigo-700'>How It Works</Link>
-                <Link to='/benefits' className='hover:text-indigo-700'>Benefits</Link>
+                <Link to='/#' className='hover:text-indigo-700'>About Us</Link>
+                <Link to='/#' className='hover:text-indigo-700'>How It Works</Link>
+                <Link to='/#' className='hover:text-indigo-700'>Benefits</Link>
                 <Link to='/auth/login' className='hover:text-indigo-700'>Login</Link>
             </div>
         </div>
@@ -151,7 +166,7 @@ export const Footer = () => {
                     <p className="text-sm mb-4 text-left">
                         ID Finder helps you quickly recover lost IDs and reunite them with their rightful owners. We ensure the process is simple and secure.
                     </p>
-                    <Link to="/about" className="text-blue-400 hover:underline">Learn More</Link>
+                    <Link to="/#" className="text-blue-400 hover:underline">Learn More</Link>
                 </div>
 
                 {/* Section 2: Quick Links */}
@@ -159,10 +174,10 @@ export const Footer = () => {
                     <h2 className="text-lg font-bold mb-4">Quick Links</h2>
                     <ul className="space-y-2 flex flex-col ">
                         <li>
-                            <Link to="/how-it-works" className="text-left w-full text-white hover:text-blue-400">How It Works</Link>
+                            <Link to="/#" className="text-left w-full text-white hover:text-blue-400">How It Works</Link>
                         </li>
                         <li>
-                            <Link to="/benefits" className="text-left w-full text-white hover:text-blue-400">Benefits</Link>
+                            <Link to="/#" className="text-left w-full text-white hover:text-blue-400">Benefits</Link>
                         </li>
                         <li>
                             <Link to="/auth/login" className="text-left w-full text-white hover:text-blue-400">Login</Link>
