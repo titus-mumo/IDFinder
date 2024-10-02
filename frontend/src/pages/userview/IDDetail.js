@@ -30,6 +30,7 @@ export const IDDetail = () => {
       .then((response) => {
         if (response && response.status && response.status === 200) {
           setIDDetails(response.data);
+          console.log(response.data)
         } else {
           throw new Error(response);
         }
@@ -50,7 +51,7 @@ export const IDDetail = () => {
     back_image,
     id_status,
   } = IDDetails;
-
+  
   return (
     <div style={{ padding: "2rem" }}>
       <Typography variant="h4" gutterBottom align="center">

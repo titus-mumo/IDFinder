@@ -144,3 +144,10 @@ class ChangeUsernameSerializer(serializers.Serializer):
         if len(value) < 3:
             raise serializers.ValidationError("Username must be at least 3 characters long.")
         return value
+
+
+class ViewUserDetailsSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = User
+        fields = ['email', 'username', 'phone_number']

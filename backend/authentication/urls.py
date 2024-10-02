@@ -12,6 +12,7 @@ urlpatterns = [
     path('verify-code/', views.VerifyCodeView.as_view(), name='verify_code'),
     path('change-current-password/', views.ChangePasswordView.as_view(), name='change password'),
     path('change-username/', views.ChangeUsernameView.as_view(), name='change username'),
-    path('check-if-user-is-admin/', views.CheckIfUserIsAdmin.as_view(), name='user_category')
+    path('check-if-user-is-admin/', views.CheckIfUserIsAdmin.as_view(), name='user_category'),
+    path('user/details/', views.UserDetailsView.as_view(), name='user-details'),
     # Add more API endpoints as needed
 ]

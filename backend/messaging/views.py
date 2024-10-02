@@ -19,7 +19,7 @@ class ViewChats(generics.ListAPIView):
     serializer_class = MessageSerializer
 
     def get_queryset(self):
-        chat = Chats.objects.filter(user = self.request.user).first()
+        chat = Chats.objects.filter(users = self.request.user).first()
         return Message.objects.filter(chat=chat).order_by('timestamp')
 
 class ViewActiveChatMessages(generics.ListAPIView):
@@ -43,36 +43,27 @@ class AdminViewChats(generics.ListAPIView):
         # Annotate the Chats queryset with the latest message
         chats = Chats.objects.annotate(latest_message=Subquery(latest_message))
         return chats
-        
-
-
-
-
-
+    
 @api_view(['GET'])
-def get_chat_room(request):
+def get_chat_id(request):
     if not request.user.is_authenticated:
         return Response({"error": "Authentication required"}, status=status.HTTP_403_FORBIDDEN)
 
-    # Fetch the first admin (or customize this to handle multiple admins)
-    try:
-        admin = User.objects.filter(is_staff=True).first()
-        if not admin:
-            return Response({"error": "Admin not found"}, status=status.HTTP_404_NOT_FOUND)
-    except User.DoesNotExist:
-        return Response({"error": "Admin not found"}, status=status.HTTP_404_NOT_FOUND)
+    user = request.user
+    chat = Chats.objects.filter(users = user).first()
+
+    return Response({"chat_id": chat.chat_id, "username": user.username}, status=status.HTTP_200_OK)
+
+@api_view(['GET'])
+def get_username(request):
+    if not request.user.is_authenticated:
+        return Response({"error": "Authentication required"}, status=status.HTTP_400_BAD_REQUEST)
 
     user = request.user
+    if not user.is_staff:
+        return Response({"error": "Must be admin"}, status=status.HTTP_400_BAD_REQUEST)
 
-    if user.is_staff:
-        return Response({"error": "Admins cannot chat with other admins"}, status=status.HTTP_403_FORBIDDEN)
-
-    room_name = f"{admin.username}_{user.username}"
-
-
-    chat_room, created = Chats.objects.get_or_create(room=room_name, user=user)
-
-    return Response({"room_name": room_name, "admin": admin.username, "user": user.username}, status=status.HTTP_200_OK)
+    return Response({"username": user.username}, status=status.HTTP_200_OK)
 
 
 

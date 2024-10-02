@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import ID
+from .models import ID, IDClaim
 from django.contrib.auth import get_user_model
 from django.utils.html import format_html
 
@@ -7,7 +7,7 @@ CustomUser = get_user_model()
 
 @admin.register(ID)
 class IDAdmin(admin.ModelAdmin):
-    list_display = ('id_name', 'id_no', 'date_of_birth', 'gender', 'district_of_birth', 'date_of_issue', 'id_status', 'user', 'id_image_tag')
+    list_display = ('id_name', 'id_no', 'date_of_birth', 'gender', 'district_of_birth', 'date_of_issue', 'id_status', 'user', 'front_image', 'back_image', 'id_image_tag')
     list_filter = ('gender', 'district_of_birth', 'id_status', 'date_of_issue')
     search_fields = ('id_name', 'id_no', 'sn', 'district_of_birth')
     readonly_fields = ('id_image_tag',)
@@ -51,3 +51,8 @@ class CustomUserAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             return queryset
         return queryset.filter(id=request.user.id)
+    
+@admin.register(IDClaim)
+class ClaimAdmin(admin.ModelAdmin):
+    list_display = [field.name for field in IDClaim._meta.fields]
+

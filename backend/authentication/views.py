@@ -20,6 +20,10 @@ from .serializers import (
     VerifyCodeSerializer
 )
 
+from rest_framework import views
+
+from messaging.models import Chats
+
 from django.http import JsonResponse
 
 User = get_user_model()
@@ -33,6 +37,14 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
+
+            chat = Chats.objects.create()
+            chat.users.add(user)
+            admins = User.objects.filter(is_staff = True)
+
+            for admin in admins:
+                chat.users.add(admin)
+
             return Response({
                 'user': {
                     'email': user.email,
@@ -225,3 +237,15 @@ class ChangeUsernameView(generics.UpdateAPIView):
             return Response({"username": user.username}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+from .serializers import ViewUserDetailsSerializer
+
+class UserDetailsView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ViewUserDetailsSerializer
+
+    def get_object(self):
+        user = self.request.user
+        return user
+
+

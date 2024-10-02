@@ -1,19 +1,21 @@
 import os
 import re
+from rest_framework.views import APIView
 from rest_framework import generics, status, views
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.response import Response
 from rest_framework.exceptions import ValidationError
 from django.core.files.storage import default_storage
 from django.conf import settings
-from .models import ID
-from .serializers import IDSerializer, IDListSerializer, MyIDListSerializer
+from .models import ID, IDClaim
+from .serializers import IDSerializer, IDListSerializer, MyIDListSerializer, IDClaimSerializer
 import pytesseract
 from PIL import Image
 from django.core.files.base import ContentFile
 from django.http import JsonResponse
+from .image_matcher import ImageMatcher
 from django.utils import timezone
-
+import uuid
 
 class IDCreateView(generics.CreateAPIView):
     queryset = ID.objects.all()
@@ -118,6 +120,80 @@ class MyIDListView(generics.ListAPIView):
         return ID.objects.filter(user=self.request.user)  # Return only IDs uploaded by the logged-in user
 
 
+
+    """ user submits a POST request to VerifyIDView with their ID number, personal details, and a selfie image.
+The view verifies the provided information against the retrieved ID record and performs facial recognition using the ImageMatcher class.
+If all checks pass, a success response is returned.
+An admin can then approve or reject the user's verification claim through the ApproveIDClaim view. The claim status is updated accordingly, and relevant actions (e.g., marking the ID as claimed) are taken."""
+
+
+class IDClaimView(generics.CreateAPIView):
+    queryset = IDClaim.objects.all()
+    permission_classes = [IsAuthenticated]
+    serializer_class = IDClaimSerializer
+
+    def post(self, serializer):
+        data = self.request.data
+        primary_key = self.request.query_params.get('id_no')
+        id_record = ID.objects.filter(primary_key = primary_key).first()
+        data["id_found"] = id_record.primary_key
+        data["user"] = self.request.user.id
+        user_image = self.request.FILES.get('selfie')
+        if user_image:
+            temp_filename = f'temp_{uuid.uuid4()}.jpg'
+            
+            # Save the user image temporarily in the MEDIA_ROOT directory
+            temp_file_path = default_storage.save(os.path.join('temp', temp_filename), ContentFile(user_image.read()))
+
+            # Get the absolute path for the temp file
+            temp_file_full_path = os.path.join(settings.MEDIA_ROOT, temp_file_path)
+            matcher = ImageMatcher()
+            match_score = matcher.compare_faces(temp_file_full_path, id_record.front_image.path)
+            default_storage.delete(temp_file_full_path)
+        data['image_match'] = match_score
+
+        serializer = self.get_serializer(data = data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"message": "Claim submitted successfully"}, status=status.HTTP_201_CREATED)
+        else:
+            return Response({"error": serializer.errors}, status = status.HTTP_400_BAD_REQUEST)
+
+
+from .serializers import ViewUserClaimSerializer
+
+class UserClaimsView(generics.ListAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ViewUserClaimSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return IDClaim.objects.filter(user = user)
+
+class ApproveIDClaim(APIView):
+    permission_classes = [IsAdminUser]
+
+    def post(self, request, claim_id):
+        try:
+            claim = IDClaim.objects.get(id=claim_id)
+        except IDClaim.DoesNotExist:
+            return Response({"detail": "Claim not found."}, status=404)
+
+        action = request.data.get('action')  # Either 'approve' or 'reject'
+
+        if action == 'approve':
+            claim.claim_status = 'approved'
+            claim.id_found.mark_as_claimed(claim.user)
+        elif action == 'reject':
+            claim.claim_status = 'rejected'
+        else:
+            return Response({"detail": "Invalid action."}, status=400)
+
+        claim.save()
+        return Response({"detail": f"Claim {claim.claim_status}"}, status=200)
+
+
+
 class AdminDashBoard(views.APIView):
     permission_classes = [IsAdminUser]
 
@@ -155,3 +231,31 @@ class IDDetail(views.APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
             return Response({"error": "ID not found"}, status=status.HTTP_404_NOT_FOUND)
+
+
+class AdminIDClaimView(generics.ListAPIView):
+    permission_classes = [IsAdminUser]
+    serializer_class = ViewUserClaimSerializer
+    
+    def get_queryset(self):
+        return IDClaim.objects.all()
+
+
+from .serializers import ViewIDInClaimSerializer
+
+class ClaimIDDetail(views.APIView):
+    permission_classes = [IsAdminUser]
+    
+    def get(self, request):
+        id_no = request.query_params.get('id_no')
+        if not id_no:
+            return Response({"error": "ID number is required"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        id_detail = ID.objects.filter(id_no=id_no).first()
+        if id_detail:
+            serializer = ViewIDInClaimSerializer(id_detail)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            return Response({"error": "ID not found"}, status=status.HTTP_404_NOT_FOUND)
+
+

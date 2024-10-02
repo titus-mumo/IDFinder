@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../providers';
 import { Input, Button } from "@mui/material";
 import { useSnackbar } from '../../providers/SnackProvider';
+import { ApiCall } from '../../hooks';
 
 export const ClaimPage = () => {
   const location = useLocation();
   const { primary_key } = location.state || {};
+  const pk = parseInt(primary_key)
   const showSnackBar = useSnackbar();
   const userAuth = useAuth();
   const { access, refresh, setAccess, setRefresh } = userAuth;
@@ -38,7 +40,18 @@ export const ClaimPage = () => {
     formData.append("date_of_birth", dateOfBirth);
     formData.append("selfie", selfie);
 
-    navigate('/claims');
+    ApiCall(`api/verify/?id_no=${pk}`, 'post', access, refresh, setAccess, setRefresh, formData, {}, true, showSnackBar)
+    .then((response) => {
+      if(response && response.status !== undefined && response.status === 201){
+        return showSnackBar("Claim submitted successfully")
+      }
+      throw new Error(response)
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+
+    // navigate('/claims');
   };
 
   const handleEnterSelfie = (e) => {

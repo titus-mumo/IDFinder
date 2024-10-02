@@ -3,6 +3,8 @@ import { Input } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search';
 import InputAdornment from '@mui/material/InputAdornment';
 import { Close } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@mui/material';
 
 export const Search = () => {
   const [searchQuery, setSearchQuery] = useState('')
@@ -55,27 +57,25 @@ export const Search = () => {
 
 
   return (
-    <div className='flex justify-center flex-col'>
-      <form>
-        <div>
+    <div className='flex justify-center flex-col w-full'>
+      <form
+        className="self-center max-w-md flex flex-col justify-start bg-white px-2 w-full"
+      >
         <Input
-                className="my-3 border-2 border-gray-200 px-1 md:px-1.5 rounded-full w-full text-xs md:text-sm max-w-md"
+                className="my-2 border-2 border-gray-300 p-1 rounded-md w-full text-xs md:text-sm"
                 type="text"
                 placeholder="Enter id no. "
                 value={searchQuery}
                 onChange={(e) => handleSearchQuery(e.target.value)}
                 disableUnderline
-                endAdornment={
+                startAdornment={
                     <InputAdornment position="start">
                     <SearchIcon />
                     </InputAdornment>
                 }
                 />
-        </div>
       </form>
-
       <FilteredContainer filteredIDs={filteredIDs}/>
-
     </div>
   )
 }
@@ -91,13 +91,24 @@ const FilteredContainer = ({ filteredIDs }) => {
     setDisplayList((prevList) => prevList.filter((_, i) => i !== index));
   }, []);
 
+  const navigate = useNavigate()
+
   return (
-    <div className={`${displayList.length === 0 ? 'hidden' : 'z-1000000 self-center flex bg-gray-100 flex-col w-400 rounded-md shadow-md py-1.5'}`}>
+    <div className={`${displayList.length === 0 ? 'hidden' : 'z-1000000 self-center flex bg-gray-100 flex-col max-w-md w-full rounded-md shadow-md py-1.5'}`}>
       {
         displayList.map((id, index) => (
           <div key={index} className='text-gray-900 flex justify-between items-center hover:bg-gray-300 rounded-md mx-1 py-1 px-2 hover:cursor-pointer text-sm'>
-            <p className='basis-3/5 text-start text-left'>{id.id_name + ' ****'}</p>
+            <p className='basis-2/5 text-start text-left'>{id.id_name + ' ****'}</p>
             <p className='basis-1/5 text-start text-left'>{id.id_no + '****'}</p>
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={() => navigate('/claim-id', { state: { primary_key: id.primary_key } })}
+              className="text-xs md:text-sm"
+            >
+              Claim
+            </Button>
             <div onClick={() => handleClickOnClose(index)} className='basis-1/5 text-end text-right'>
               <Close />
             </div>
