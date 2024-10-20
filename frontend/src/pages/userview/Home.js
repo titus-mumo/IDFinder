@@ -27,7 +27,7 @@ export const Home = () => {
       throw new Error(response)
     })
     .catch((error) => {
-      showSnackbar(error.response.data.error)
+      showSnackbar("An error occured")
     })
   }, [])
 

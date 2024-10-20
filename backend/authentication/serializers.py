@@ -123,3 +123,31 @@ class VerifyCodeSerializer(serializers.Serializer):
         except VerificationCode.DoesNotExist:
             raise serializers.ValidationError("Invalid code")
         return data
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    current_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True)
+    confirm_new_password = serializers.CharField(write_only=True)
+
+    def validate(self, data):
+        # Ensure that new password and confirm password match
+        if data['new_password'] != data['confirm_new_password']:
+            raise serializers.ValidationError("The new passwords do not match.")
+        return data
+
+
+class ChangeUsernameSerializer(serializers.Serializer):
+    new_username = serializers.CharField(max_length=150)
+
+    def validate_new_username(self, value):
+        if len(value) < 3:
+            raise serializers.ValidationError("Username must be at least 3 characters long.")
+        return value
+
+
+class ViewUserDetailsSerializer(serializers.ModelSerializer):
+    
+    class Meta:
+        model = User
+        fields = ['email', 'username', 'phone_number']

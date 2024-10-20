@@ -13,12 +13,13 @@ SECRET_KEY = 'django-insecure-91z4o0$!$ipaa5gstu8)u6hey1h-xk%e%#y!ootj_j%#z6k)e=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'http://localhost:8080']
+ALLOWED_HOSTS = ['127.0.0.1', 'http://localhost:8080', 'localhost:8000', 'localhost', 'websocketking.com']
 
 
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'corsheaders',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -27,6 +28,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'messaging',
+    'search',
     'id_finder',
     'authentication',
     'django_linear_migrations',
@@ -92,7 +94,11 @@ MIDDLEWARE = [
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:8080",
+    'http://localhost:8000',
 ]
+
+SESSION_COOKIE_SAMESITE = None  # Allows cross-origin session cookies
+SESSION_COOKIE_SECURE = False  # Should be True in production when using HTTPS
 
 AUTH_USER_MODEL = 'authentication.Custom_User'
 
@@ -196,7 +202,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Africa/Nairobi'
 
 USE_I18N = True
 
@@ -210,10 +216,22 @@ STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+BASE_URL = 'http://127.0.0.1:8000'
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+ASGI_APPLICATION = "backend.asgi.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
+        },
+    },
+}
 
+ASGI_THREADS = 1000
 
