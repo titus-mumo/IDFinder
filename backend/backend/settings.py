@@ -13,7 +13,7 @@ SECRET_KEY = 'django-insecure-91z4o0$!$ipaa5gstu8)u6hey1h-xk%e%#y!ootj_j%#z6k)e=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'http://localhost:8080', 'localhost:8000', 'localhost', 'websocketking.com', "idfinder-2hxq.onrender.com"]
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'websocketking.com', 'idfinder-2hxq.onrender.com']
 
 
 # Application definition
