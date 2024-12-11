@@ -95,6 +95,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:8080",
     'http://localhost:8000',
+    'https://idfinder-2hxq.onrender.com'
 ]
 
 SESSION_COOKIE_SAMESITE = None  # Allows cross-origin session cookies
@@ -131,8 +132,6 @@ from dotenv import load_dotenv
 
 # Load environment variables from the .env file
 load_dotenv()
-
-ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
 
 # Get the environment type, defaulting to 'development' if not specified
 ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
