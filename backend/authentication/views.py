@@ -3,7 +3,7 @@ from django.core.mail import send_mail
 from django.urls import reverse
 from django.utils.encoding import force_str
 from .serializers import SetNewPasswordSerializer
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.contrib.auth import get_user_model
@@ -20,6 +20,12 @@ from .serializers import (
     VerifyCodeSerializer
 )
 
+from rest_framework import views
+
+from messaging.models import Chats
+
+from django.http import JsonResponse
+
 User = get_user_model()
 
 class RegisterView(generics.CreateAPIView):
@@ -31,6 +37,14 @@ class RegisterView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
+
+            chat = Chats.objects.create()
+            chat.users.add(user)
+            admins = User.objects.filter(is_staff = True)
+
+            for admin in admins:
+                chat.users.add(admin)
+
             return Response({
                 'user': {
                     'email': user.email,
@@ -59,6 +73,27 @@ class LoginView(generics.GenericAPIView):
                 'phone_number': user.phone_number,
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class LogoutView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        try:
+            # Get the refresh token from the request data
+            refresh_token = request.data.get("refresh")
+
+            if refresh_token is None:
+                return Response({"error": "Refresh token is required."}, status=status.HTTP_400_BAD_REQUEST)
+
+            # Blacklist the token (mark it as unusable)
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response({"message": "Logout successful. Token has been blacklisted."}, status=status.HTTP_205_RESET_CONTENT)
+
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
 class PasswordResetView(generics.GenericAPIView):
     serializer_class = PasswordResetSerializer
     permission_classes = [AllowAny]
@@ -67,6 +102,7 @@ class PasswordResetView(generics.GenericAPIView):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         email = serializer.validated_data['email']
+        base_url = serializer.validated_data['base_url']
         
         try:
             user = User.objects.get(email=email)
@@ -76,11 +112,9 @@ class PasswordResetView(generics.GenericAPIView):
         # Generate password reset token and UID
         token = default_token_generator.make_token(user)
         uid = urlsafe_base64_encode(force_bytes(user.pk))
-        
         # Create password reset link
-        reset_link = request.build_absolute_uri(
-            reverse('password-reset-confirm', kwargs={'uidb64': uid, 'token': token})
-        )
+        
+        reset_link = base_url + '/auth/password-reset-confirm/' + uid + '/' + token + '/'
 
         # Send email
         send_mail(
@@ -100,7 +134,7 @@ class PasswordResetView(generics.GenericAPIView):
 
 class PasswordResetConfirmView(generics.GenericAPIView):
     serializer_class = SetNewPasswordSerializer
-
+    permission_classes = [AllowAny]
     def post(self, request, uidb64, token, *args, **kwargs):
         try:
             uid = force_str(urlsafe_base64_decode(uidb64))
@@ -115,7 +149,7 @@ class PasswordResetConfirmView(generics.GenericAPIView):
             user.save()
             return Response({"message": "Password has been reset successfully."})
         else:
-            return Response({"error": "Invalid token or UID."}, status=400)
+            return Response({"error": "Invalid reset link"}, status=400)
 
 
 class RefreshTokenView(generics.GenericAPIView):
@@ -128,7 +162,8 @@ class RefreshTokenView(generics.GenericAPIView):
         refresh = serializer.validated_data['refresh']
         token = RefreshToken(refresh)
         return Response({
-            'access': str(token.access_token)
+            'access': str(token.access_token),
+            'refresh': str(token)
         })
 
 
@@ -149,3 +184,68 @@ class VerifyCodeView(generics.GenericAPIView):
                 'phone_number': user.phone_number,
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+class CheckIfUserIsAdmin(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return JsonResponse({"staff": user.is_staff}, status = status.HTTP_200_OK)
+
+
+from .serializers import ChangePasswordSerializer, ChangeUsernameSerializer
+
+
+class ChangePasswordView(generics.UpdateAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ChangePasswordSerializer
+
+    def update(self, request, *args, **kwargs):
+        user = request.user
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        
+        # Check if the current password is correct
+        if not user.check_password(serializer.validated_data['current_password']):
+            return Response({"error": "Current password is incorrect."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Set the new password
+        user.set_password(serializer.validated_data['new_password'])
+        user.save()
+
+        return Response({"message": "Password changed successfully."}, status=status.HTTP_200_OK)
+
+
+class ChangeUsernameView(generics.UpdateAPIView):
+    serializer_class = ChangeUsernameSerializer
+    permission_classes = [IsAuthenticated]
+
+    def update(self, request, *args, **kwargs):
+        user = request.user
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            # Check if the new username already exists
+            new_username = serializer.validated_data['new_username']
+            if User.objects.filter(username=new_username).exists():
+                return Response({"error": "Username already taken."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Update the username
+            user.username = new_username
+            user.save()
+
+            return Response({"username": user.username}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+from .serializers import ViewUserDetailsSerializer
+
+class UserDetailsView(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = ViewUserDetailsSerializer
+
+    def get_object(self):
+        user = self.request.user
+        return user
+
+

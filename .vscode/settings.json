@@ -1,0 +1,7 @@
+{
+    "html.autoClosingTags": true,
+    "javascript.autoClosingTags": true,
+    "javascript.suggest.autoImports": true,
+    "editor.colorDecorators": true,
+    "javascript.suggest.enabled": true,
+}

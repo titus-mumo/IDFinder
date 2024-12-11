@@ -1,7 +1,8 @@
-import axios from "axios"
+import axios from "axios";
 
-const base_url = process.env.BASE_URL
+import { useSnackbar } from "../providers/SnackProvider";
 
+const base_url = process.env.BASE_URL;
 
 export const refreshAccessToken = async (refreshToken) => {
     let data;
@@ -12,11 +13,13 @@ export const refreshAccessToken = async (refreshToken) => {
         }
     });
 
+
     try {
-        const response = await api.post('token/refresh/', { refresh: refreshToken });
-        data = response.data
+        const response = await api.post('auth/refresh-token/', { refresh: refreshToken });
+        data = response.data;
         return data;
     } catch (error) {
-        return null
+        window.location.href = "/auth/login";
+        return null;
     }
 };

@@ -1,8 +1,10 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import { Input, Button } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import { useSnackbar } from '../../providers/SnackProvider'
-
+import { Link } from 'react-router-dom'
+import axios from 'axios'
+require('dotenv').config()
 
 export const ResetPassword = () => {
   const [password, setPassword] = useState('')
@@ -10,14 +12,33 @@ export const ResetPassword = () => {
 
   const showSnackbar = useSnackbar();
 
+  const {uidb64, token} = useParams()
+
   const navigate = useNavigate()
   const handleResetPassword = (e) => {
+    if(password.length < 8){
+      return showSnackbar("Short password")
+    }
     e.preventDefault()
-    //TODO: Reset password logic
-    showSnackbar('Password reset success!');
-    setTimeout(() => {
-      navigate('/auth/login')
-    }, 1500)
+    const data = {
+      password: password,
+      password_confirm: confirmPassword,
+    }
+    axios.post(process.env.BASE_URL + `auth/password-reset-confirm/${uidb64}/${token}/`, data)
+    .then((response) => {
+      if(response && response.status && response.status === 200){
+        showSnackbar('Password reset success!');
+        setTimeout(() => {
+          navigate('/auth/login')
+        }, 1500)
+        return
+      }
+      throw new Error(response)
+
+    })
+    .catch((error) => {
+      showSnackbar(error.response.data.error)
+    })
   }
   return (
     <div className='flex justify-around mt-20'>
@@ -42,6 +63,7 @@ export const ResetPassword = () => {
                     >
                         Reset Password
                     </Button>
+          <Link to='/auth/login' className='text-blue-500 mt-3'>Go to login</Link>
         </form>
       </div>
     </div>
