@@ -1,7 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { IDFoundComponent } from '../../components'
-import IDList from '../../mockData/IDData'
-import { Link } from 'react-router-dom'
 import { ApiCall } from '../../hooks'
 import { useAuth } from '../../providers'
 import { useSnackbar } from '../../providers/SnackProvider'

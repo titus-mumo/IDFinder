@@ -118,7 +118,7 @@ export const IDDetail = () => {
                   <Avatar
                     variant="rounded"
                     alt="Front ID Image"
-                    src={front_image}
+                    src={process.env.IMAGE_URL + front_image}
                     sx={{ width: 120, height: 160, margin: "auto" }}
                   />
                 ) : (
@@ -136,7 +136,7 @@ export const IDDetail = () => {
                   <Avatar
                     variant="rounded"
                     alt="Back ID Image"
-                    src={back_image}
+                    src={process.env.IMAGE_URL + back_image}
                     sx={{ width: 120, height: 160, margin: "auto" }}
                   />
                 ) : (

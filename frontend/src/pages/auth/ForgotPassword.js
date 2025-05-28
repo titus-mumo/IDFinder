@@ -2,7 +2,6 @@ import { Typography, Input, Button } from '@mui/material'
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useSnackbar } from '../../providers/SnackProvider';
-import { useAuth } from '../../providers';
 import axios from 'axios';
 
 require('dotenv').config()
@@ -15,11 +14,6 @@ export const ForgotPassword = () => {
     const [active, setActive] = useState('email')
 
     const showSnackBar = useSnackbar()
-
-    const navigate = useNavigate()
-
-    const userAuth = useAuth()
-    const {access, setAccess, refresh, setRefresh} = userAuth
 
     const handleSendCode = (e) => {
         e.preventDefault()

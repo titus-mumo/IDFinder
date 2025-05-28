@@ -1,11 +1,9 @@
 import React, { useState } from 'react'
-import IDList from '../../mockData/IDData'
 import { IDDisplayComponent } from '../../components'
 import { ApiCall } from '../../hooks'
 import { useAuth } from '../../providers'
 import { useEffect } from 'react'
 import { useSnackbar } from '../../providers/SnackProvider'
-import { resolve } from 'path'
 
 export const Home = () => {
   const userAuth = useAuth()

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useSnackbar } from '../../providers/SnackProvider'
 import { ApiCall } from '../../hooks'
 import { useAuth } from '../../providers'
-import { Button, Box, Typography, Grid } from '@mui/material'
+import { Button } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
 
 export const AdminClaims = () => {

@@ -33,8 +33,6 @@ export const UserClaims = () => {
         setExpandedClaimId(null);
     };
 
-    // Check if a claim is expanded
-    const isClaimExpanded = (claimId) => expandedClaimId === claimId;
 
     return (
         <div className='w-full h-auto flex justify-center flex-wrap'>

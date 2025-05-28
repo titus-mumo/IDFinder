@@ -12,7 +12,8 @@ import ContactEmergencyIcon from '@mui/icons-material/ContactEmergency';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
-
+import { FindInPage } from '@mui/icons-material';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 
 const useSideBarItems = [
     {
@@ -23,12 +24,12 @@ const useSideBarItems = [
     {
         title: "IDs I Found",
         link: '/ids-i-found',
-        icon: <HomeIcon />
+        icon: <FindInPage />
     },
     {
         title: "Claims",
         link: '/claims',
-        icon: <HomeIcon />
+        icon: <AssignmentTurnedInIcon />
     },
     {
         title: "Contact Admin",

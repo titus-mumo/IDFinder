@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useLocation} from 'react-router-dom';
 import { useAuth } from '../../providers';
 import { Input, Button } from "@mui/material";
 import { useSnackbar } from '../../providers/SnackProvider';
@@ -18,8 +18,6 @@ export const ClaimPage = () => {
   const [districtOfBirth, setDistrictOfBirth] = useState('');
   const [dateOfBirth, setDateOfBirth] = useState('');
   const [selfie, setSelfie] = useState(null);
-
-  const navigate = useNavigate();
 
   const handleClaimId = (e) => {
     e.preventDefault();

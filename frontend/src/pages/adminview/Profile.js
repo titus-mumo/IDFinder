@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { ApiCall } from '../../hooks';
 import { useAuth } from '../../providers';
 import { useSnackbar } from '../../providers/SnackProvider';
-import { Input, Button } from "@mui/material";
+import { Input } from "@mui/material";
 import InputAdornment from '@mui/material/InputAdornment';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import IconButton from '@mui/material/IconButton';

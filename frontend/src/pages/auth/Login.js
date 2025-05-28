@@ -8,7 +8,6 @@ import EmailIcon from '@mui/icons-material/Email';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import { useAuth } from '../../providers';
-import { ApiCall } from '../../hooks';
 
 export const Login = () => {
     const [email, setEmail] = useState('');
@@ -19,7 +18,6 @@ export const Login = () => {
     const showSnackBar = useSnackbar();
     const navigate = useNavigate();
     const userAuth = useAuth();
-    const { setAccess, setRefresh } = userAuth;
 
     const handleLoginWithEmail = async (e) => {
         e.preventDefault();
