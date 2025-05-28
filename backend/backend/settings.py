@@ -1,3 +1,7 @@
+from dotenv import load_dotenv
+from decouple import config
+import os
+from datetime import timedelta
 from decouple import config, Csv
 from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -13,7 +17,8 @@ SECRET_KEY = 'django-insecure-91z4o0$!$ipaa5gstu8)u6hey1h-xk%e%#y!ootj_j%#z6k)e=
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'websocketking.com', 'https://idfinder-2hxq.onrender.com', 'idfinder-2hxq.onrender.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'websocketking.com', 'https://idfinder-2hxq.onrender.com',
+                 'idfinder-2hxq.onrender.com', 'https://id-finder-lx3z.onrender.com']
 
 
 # Application definition
@@ -32,14 +37,14 @@ INSTALLED_APPS = [
     'id_finder',
     'authentication',
     'django_linear_migrations',
-    #for the rest_framework
+    # for the rest_framework
     'oauth2_provider',
     'rest_framework',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     # 'rest_framework_social_oauth2',
-    'django.contrib.sites', 
-    
+    'django.contrib.sites',
+
     # Required for allauth
     'allauth',
     'allauth.account',
@@ -59,7 +64,6 @@ REST_FRAMEWORK = {
 }
 
 # JWT settings
-from datetime import timedelta
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
@@ -124,11 +128,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'backend.wsgi.application'
 
 
-
-# Add email server settings 
-import os
-from pathlib import Path
-from dotenv import load_dotenv  
+# Add email server settings
 
 # Load environment variables from the .env file
 load_dotenv()
@@ -146,16 +146,16 @@ if ENVIRONMENT == 'production':
     EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
     EMAIL_HOST = 'smtp.gmail.com'
     EMAIL_HOST_USER = os.getenv('EMAIL_ADDRESS')
-    EMAIL_HOST_PASSWORD =os.getenv('EMAIL_HOST_PASSWORD') 
-    EMAIL_PORT : 587
-    EMAIL_USE_TLS = True #cryptographic protocol that ensures secure communication between email servers.
+    EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+    EMAIL_PORT: 587
+    # cryptographic protocol that ensures secure communication between email servers.
+    EMAIL_USE_TLS = True
     DEFAULT_FROM_EMAIL = 'idfinderkenya'
     ACCOUNT_EMAIL_SUBJECT_PREFIX = ''
 else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-#verification phone setting
-from decouple import config
+# verification phone setting
 
 TWILIO_ACCOUNT_SID = config('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = config('TWILIO_AUTH_TOKEN')
@@ -233,4 +233,3 @@ CHANNEL_LAYERS = {
 }
 
 ASGI_THREADS = 1000
-
