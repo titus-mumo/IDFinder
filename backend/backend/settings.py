@@ -100,7 +100,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:8080",
     'http://localhost:8000',
     'https://idfinder-2hxq.onrender.com',
-    'https://id-finder-azure.vercel.app/',
     'https://id-finder-azure.vercel.app',
 ]
 
