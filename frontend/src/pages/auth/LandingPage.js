@@ -59,6 +59,7 @@ const Header = () => {
 };
 
 const Home = () => {
+    const navigate = useNavigate();
     return (
         <div className="home py-16 flex flex-col lg:flex-row justify-around items-center bg-gradient-to-r from-indigo-600 to-indigo-800 text-white">
             <div className="space-y-4 text-center lg:text-left">
@@ -79,7 +80,7 @@ const Home = () => {
                     Find Your Lost ID Effortlessly
                 </motion.h2>
                 <p className='text-lg mt-16'>We provide a safe and reliable platform to help you recover or post lost IDs quickly and securely.</p>
-                <Button sx={{ zIndex: 2 }} variant="contained" color="secondary" size="large">
+                <Button sx={{ zIndex: 2 }} variant="contained" color="secondary" size="large" onClick={() => navigate('/auth/login')}>
                     Find Your ID
                 </Button>
             </div>
