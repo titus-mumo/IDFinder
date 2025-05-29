@@ -99,7 +99,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8080",
     "http://127.0.0.1:8080",
     'http://localhost:8000',
-    'https://idfinder-2hxq.onrender.com'
+    'https://idfinder-2hxq.onrender.com',
+    'https://id-finder-azure.vercel.app/',
+    'https://id-finder-azure.vercel.app',
 ]
 
 SESSION_COOKIE_SAMESITE = None  # Allows cross-origin session cookies
